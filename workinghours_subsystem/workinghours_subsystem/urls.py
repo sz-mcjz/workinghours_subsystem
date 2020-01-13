@@ -9,6 +9,8 @@ urlpatterns = [
     path('', db_api.login, name='login'),
     # 退出系统
     path('logout/', db_api.logout, name='logout'),
+    # 修改密码
+    path('profile/', db_api.profile, name='profile'),
     # boss api 子路由
     path('boss/', include('boss.urls')),
     # leader api 子路由

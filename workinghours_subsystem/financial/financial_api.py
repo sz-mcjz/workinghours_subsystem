@@ -12,5 +12,6 @@ def financial_index(request):
         'username': user.username,
         'icon': user.icon,
         'department': user.department.name,
+        'telephone': user.telephone,
     }
     return render_to_response('financial/index.html', context=data)

@@ -142,7 +142,9 @@
                         </a>
                     </li>
                     <li class="menu-header">Components</li>
-                    {% block components %}{% endblock %}
+                    {% block components %}
+
+                    {% endblock %}
                 </ul>
             </aside>
         </div>
@@ -326,7 +328,16 @@
         $.post(orig + "/profile/", {old_password: old_pwd, password: pwd, new_password: new_pwd}, function (result) {
             if (result.msg == "修改成功。") {
                 alert("修改成功!");
-                window.location.replace(orig + "/index/");
+                if (result.department_id == '1'){
+                    window.location.replace(orig + "/boss/index/");
+                }
+                else if (result.department_id == '3'){
+                    window.location.replace(orig + "/leader/index/");
+                }
+                else if (result.department_id == '7'){
+                    window.location.replace(orig + "/financial/index/");
+                }
+
             } else if (result.msg == "新密码不能小于4位。") {
                 alert("新密码不能小于4位!");
             } else if (result.msg == "设置的两次新密码不一致。") {

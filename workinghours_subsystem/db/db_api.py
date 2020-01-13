@@ -45,3 +45,41 @@ def logout(request):
         res = redirect(reverse('login'))
         res.delete_cookie('uuid')
         return res
+
+
+def profile(request):
+    if request.method == 'GET':
+        phone = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))
+        print(phone)
+        user = Staff.objects.get(telephone=phone)
+        data = {
+            'icon': user.icon,
+            'username': user.username,
+            'id_card': user.id_card,
+            'telephone': phone,
+            'password': user.password,
+            'department': user.department.name,
+        }
+        return render_to_response('profile.html', context=data)
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password')
+        password = request.POST.get('password')
+        new_password = request.POST.get('new_password')
+        phone = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))
+        user = Staff.objects.get(telephone=phone)
+        if old_password and password and new_password:
+            if user.password == old_password:
+                if len(password) < 4:
+                    return JsonResponse(data={"msg": "新密码不能小于4位。"}, json_dumps_params={'ensure_ascii': False})
+                else:
+                    if new_password == password:
+                        obj = Staff.objects.get(telephone=user.telephone)
+                        obj.password = password
+                        obj.save()
+                        return JsonResponse(data={'msg': '修改成功。','department_id':user.department_id}, json_dumps_params={'ensure_ascii': False})
+                    else:
+                        return JsonResponse(data={'msg': '设置的两次新密码不一致。'}, json_dumps_params={'ensure_ascii': False})
+            else:
+                return JsonResponse(data={"msg": "密码错误。"}, json_dumps_params={'ensure_ascii': False})
+        else:
+            return JsonResponse(data={'msg': '内容不能为空。'}, json_dumps_params={'ensure_ascii': False})

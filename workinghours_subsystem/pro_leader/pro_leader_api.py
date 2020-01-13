@@ -12,5 +12,6 @@ def pro_leader_index(request):
         'username': user.username,
         'icon': user.icon,
         'department': user.department.name,
+        'telephone': user.telephone,
     }
     return render_to_response('pro_leader/index.html', context=data)
