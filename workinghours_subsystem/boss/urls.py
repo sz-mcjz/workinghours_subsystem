@@ -1,5 +1,7 @@
 from django.urls import path
 
-urlpatterns = [
+from boss import boss_api
 
+urlpatterns = [
+    path('index/', boss_api.boss_index, name='boss_index'),
 ]

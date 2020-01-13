@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block index %}
+    {% url 'boss_index' %}
+{% endblock %}
+{% block _index %}
+    {% url 'boss_index' %}
+{% endblock %}
+{% block components %}
+    <li>
+        <a href="#" class="has-dropdown"><i
+                class="ion ion-ios-book-outline"></i><span>项目管理</span></a>
+        <ul class="menu-dropdown">
+        </ul>
+    </li>
+    <li>
+        <a href="#" class="has-dropdown"><i class="ion ion-edit"></i><span>员工管理</span></a>
+        <ul class="menu-dropdown">
+        </ul>
+    </li>
+    <li>
+        <a href="#" class="has-dropdown"><i class="ion ion-flag"></i><span>工资管理</span></a>
+        <ul class="menu-dropdown">
+        </ul>
+    </li>
+    <li>
+        <a href="" class="has-dropdown"><i class="ion ion-ios-albums-outline"></i>统计分析<span></span></a>
+        <ul class="menu-dropdown">
+            <li><a href=""><i class="ion ion-ios-circle-outline"></i>考勤修改记录</a></li>
+        </ul>
+    </li>
+{% endblock %}
