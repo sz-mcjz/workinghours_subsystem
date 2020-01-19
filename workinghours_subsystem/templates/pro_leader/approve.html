@@ -1,0 +1,55 @@
+
+<table class="table tab-css tab-hover" style="vertical-align:middle; text-align: center" id="approvelist">
+
+
+</table>
+
+<script>
+
+    var getw = function getworker() {
+        $.get(orig + "/leader/approve/info/", {}, function (request) {
+            let data = request.data.info;
+            console.log(data)
+            let v = '<tr>\n' +
+                '            <th style="text-align:center; width: 2%">编号</th>\n' +
+                '            <th style="text-align:center; width: 3%">姓名</th>\n' +
+                '            <th style="text-align:center; width: 3%">项目名</th>\n' +
+                '            <th style="text-align:center; width: 3%">填写人</th>\n' +
+                '            <th style="text-align:center; width: 4%">提交时间</th>\n' +
+                '            <th style="text-align:center; width: 4%">上次修改时间</th>\n' +
+                '            <th style="text-align:center; width: 4%">字段名</th>\n' +
+                '            <th style="text-align:center; width: 3%">原值</th>\n' +
+                '            <th style="text-align:center; width: 3%">修改值</th>\n' +
+                '            <th style="text-align:center; width: 8%">修改原因</th>\n' +
+                '            <th style="text-align:center; width: 4%">审批结果</th>\n' +
+                '            <th style="text-align:center; width: 4%">审批人</th>\n' +
+                '            <th style="text-align:center; width: 8%">审批备注</th>\n' +
+                '        </tr>';
+            $("#approvelist").html(v);
+            if (data.length == 0) {
+                $("#approvelist").append('<tr><td colspan="13">暂无内容</td></tr>')
+            }
+            for (let i = 0; i < data.length; i++) {
+                v = '<tr>\n' +
+                    '            <td>' + data[i].record_id + '</td>\n' +
+                    '            <td>' + data[i].name + '</td>\n' +
+                    '            <td>' + data[i].project_name + '</td>\n' +
+                    '            <td>' + data[i].manager + '</td>\n' +
+                    '            <td>' + data[i].submit_date + '</td>\n' +
+                    '            <td>' + data[i].data_date + '</td>\n' +
+                    '            <td>' + data[i].column + '</td>\n' +
+                    '            <td>' + data[i].original_data + '</td>\n' +
+                    '            <td>' + data[i].change_data + '</td>\n' +
+                    '            <td>' + data[i].note + '</td>\n' +
+                    '            <td>' + data[i].status + '</td>\n' +
+                    '            <td>' + data[i].approver + '</td>\n' +
+                    '            <td>' + data[i].approver_note + '</td>\n' +
+                    '        </tr>';
+                $("#approvelist").append(v);
+            }
+            ;
+        })
+    }
+    getw();
+</script>
+

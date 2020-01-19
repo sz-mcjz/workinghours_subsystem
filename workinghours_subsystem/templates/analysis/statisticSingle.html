@@ -1,0 +1,238 @@
+<div>
+    <div id="btns"></div>
+    <div id="content1" style="width: 100%;height: 400px;"></div>
+    <div id="content2">
+        <div class="datacontent" style="width: 100%;height: 400px;"></div>
+        <div class="datacontent" style="width: 100%;height: 400px;"></div>
+    </div>
+</div>
+<style>
+    .projectbtn {
+        padding: 5px;
+        margin-left: 2px;
+    }
+</style>
+
+<script>
+    // 需要两组数据  一组单项目的类似加班工时，非加班工时的数据，另外是按月份的数据
+    $.get(orig + "/financial/data/projectinfo/", {}, function (request) {
+        // 先获取项目列表
+        let pros = request.data.mine_pro;
+        $.get(orig + "/financial/statisticSingle/", {"pro_id":pros[0].project_id }, function (result) {
+            let data = result.data;
+            echars1(data);
+            echars2(data);
+
+        });
+
+        for (let i = 0; i < pros.length; i++) {
+            let v = '<button class="btn btn-primary projectbtn" pro_id="' + pros[i].project_id + '">' + pros[i].project_name + '</button>';
+            $("#btns").append(v);
+        }
+        $(".projectbtn").click(function () {
+            $.get(orig + "/financial/statisticSingle/", {"pro_id": $(this).attr("pro_id")}, function (result) {
+                let data = result.data;
+                echars1(data);
+                echars2(data);
+
+            })
+        })
+    });
+
+    function echars1(data) {
+        var dom = document.getElementById("content1");
+        var myChart = echarts.init(dom);
+        var option = null;
+        option = {
+            color: ['#3398DB'],
+            title: {
+                text: data.pro_name
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: data.name1,
+                    axisTick: {
+                        alignWithLabel: true
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value'
+                }
+            ],
+            series: [
+                {
+                    name: '',
+                    type: 'bar',
+                    barWidth: '80%',
+                    data: data.data0
+                }
+            ]
+        };
+        if (option && typeof option === "object") {
+            myChart.setOption(option, true);
+        }
+    }
+
+    function echars2(data) {
+        for (var i = 0; i < 2; i++) {
+            var app = {};
+            var option = null;
+            var dom = document.getElementsByClassName("datacontent");
+            var myChart = echarts.init(dom[i]);
+            var posList = [
+                'left', 'right', 'top', 'bottom',
+                'inside',
+                'insideTop', 'insideLeft', 'insideRight', 'insideBottom',
+                'insideTopLeft', 'insideTopRight', 'insideBottomLeft', 'insideBottomRight'
+            ];
+            app.configParameters = {
+                rotate: {
+                    min: -90,
+                    max: 90
+                },
+                align: {
+                    options: {
+                        left: 'left',
+                        center: 'center',
+                        right: 'right'
+                    }
+                },
+                verticalAlign: {
+                    options: {
+                        top: 'top',
+                        middle: 'middle',
+                        bottom: 'bottom'
+                    }
+                },
+                position: {
+                    options: echarts.util.reduce(posList, function (map, pos) {
+                        map[pos] = pos;
+                        return map;
+                    }, {})
+                },
+                distance: {
+                    min: 0,
+                    max: 100
+                }
+            };
+            app.config = {
+                rotate: 90,
+                align: 'left',
+                verticalAlign: 'middle',
+                position: 'insideBottom',
+                distance: 15,
+                onChange: function () {
+                    var labelOption = {
+                        normal: {
+                            rotate: app.config.rotate,
+                            align: app.config.align,
+                            verticalAlign: app.config.verticalAlign,
+                            position: app.config.position,
+                            distance: app.config.distance
+                        }
+                    };
+                    myChart.setOption({
+                        series: [{
+                            label: labelOption
+                        }, {
+                            label: labelOption
+                        }, {
+                            label: labelOption
+                        }, {
+                            label: labelOption
+                        }]
+                    });
+                }
+            };
+            var labelOption = {
+                show: false, // 柱子上不显示数字和文字
+                position: app.config.position,
+                distance: app.config.distance,
+                align: app.config.align,
+                verticalAlign: app.config.verticalAlign,
+                rotate: app.config.rotate,
+                formatter: '{c}  {name|{a}}',
+                fontSize: 14,
+                rich: {
+                    name: {
+                        textBorderColor: '#fff'
+                    }
+                }
+            };
+            option = {
+                color: ['#54a2cd', '#74b9ed', '#5CACEE'],
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                title: {
+                    text: data.name2[i] //'工资统计图'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: data.dataname[i] //['总工资', '加班', '非加班']
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        axisTick: {show: false},
+                        data: data.data[i].name
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: data.dataname[i][0], //'总工资',
+                        type: 'bar',
+                        barGap: 0,
+                        label: labelOption,
+                        data: data.data[i].total
+                    },
+                    {
+                        name: data.dataname[i][1],//'加班',
+                        type: 'bar',
+                        label: labelOption,
+                        data: data.data[i].normal
+                    },
+                    {
+                        name: data.dataname[i][2],//'非加班',
+                        type: 'bar',
+                        label: labelOption,
+                        data: data.data[i].over
+                    }
+                ]
+            };
+            if (option && typeof option === "object") {
+                myChart.setOption(option, true);
+            }
+
+        }
+
+    }
+</script>

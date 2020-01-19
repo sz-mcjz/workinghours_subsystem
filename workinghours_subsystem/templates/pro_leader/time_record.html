@@ -1,0 +1,166 @@
+<div>
+    <div><h2>工时信息</h2>
+        <div style="margin-left:0px;margin-top: 15px;">选择日期：<input type="date" name="date" id="datetime" value=""/>
+        </div>
+    </div>
+    <hr>
+    <table class="table tab-css tab-hover " id="tablehourinfo">
+
+    </table>
+</div>
+
+<!--申请修改工时模态框-->
+<div class="modal fade" id="changegongshi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <h4 style="padding-top: 15px;padding-left: 15px">申请修改工时信息</h4>
+            <div class="modal-body">
+                <table class="table" style="margin-bottom:0px;">
+                    <tbody>
+                    <tr>
+                        <td wdith="40%">员工姓名:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" maxlength="18" id="dworkername" required readonly
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="40%">非加班工日:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" maxlength="11" id="dnomal"
+                                   oninput="value=onlyNumber(this)" required
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="40%">加班工日:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" maxlength="11" id="dovertime"
+                                   oninput="value=onlyNumber(this)" required
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="40%">申请修改备注:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" maxlength="11" id="dbeizhu"
+                                   required
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr></tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-target="#changegongshi"
+                        id="changegongshibtn"
+                        data-toggle="modal">取消
+                </button>
+                <button class="btn btn-primary" id="changegongshiSubmit">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function onlyNumber(obj) {
+        var t = obj.value.charAt(0);
+        obj.value = obj.value.replace(/[^\d\.]/g, '');
+        obj.value = obj.value.replace(/^\./g, '');
+        obj.value = obj.value.replace(/\.{2,}/g, '.');
+        obj.value = obj.value.replace('.', '$#$').replace(/\./g, '').replace('$#$', '.');
+
+        return obj.value
+    }
+
+    $("#datetime").change(function () {
+        getWork($(this).val());
+    });
+
+    var getWork = function (date) {
+        $.get(orig + "/leader/workhours/info/", {date: date}, function (result) {
+            let data = result.data;
+
+            let v = '<tr>\n' +
+                '            <td style="width: 8%">记录编号</td>\n' +
+                '            <td style="width: 10%">项目名</td>\n' +
+                '            <td style="width: 10%">日期</td>\n' +
+                '            <td style="width: 10%">填报人</td>\n' +
+                '            <td style="width: 7%">姓名</td>\n' +
+                '            <td style="width: 5%">工种</td>\n' +
+                '            <td style="width: 10%">非加班工日</td>\n' +
+                '            <td style="width: 10%">加班工日</td>\n' +
+                '            <td style="width: 6%">总工时</td>\n' +
+                '            <td style="width: 10%">备注</td>\n' +
+                '            <td style="width: 8%">操作</td>\n' +
+                '        </tr>';
+            $("#tablehourinfo").html(v);
+            if (data.length == 0) {
+                $("#tablehourinfo").append('<tr><td colspan="11">暂无内容</td></tr>')
+            }
+            for (let i = 0; i < data.length; i++) {
+                v = '<tr>\n' +
+                    '            <td>' + data[i].working_hours_id + '</td>\n' +
+                    '            <td>' + data[i].pname + '</td>\n' +
+                    '            <td>' + data[i].write_data + '</td>\n' +
+                    '            <td>' + data[i].writer + '</td>\n' +
+                    '            <td>' + data[i].worker_name + '</td>\n' +
+                    '            <td>' + data[i].worker_type + '</td>\n' +
+                    '            <td>' + data[i].work_day + '</td>\n' +
+                    '            <td>' + data[i].overtime + '</td>\n' +
+                    '            <td>0</td>\n' +
+                    '            <td>' + data[i].note + '</td>\n' +
+                    '            <td><a href="javascript:;" worker_id="'+data[i].worker_info_id_id+'" work_h_id="' + data[i].working_hours_id + '" class="shenqingxiugai">申请修改</a></td>\n' +
+                    '        </tr>';
+                $("#tablehourinfo").append(v);
+            }
+            $(".shenqingxiugai").click(function () {
+                $("#changegongshibtn").click();
+                let name = $(this).parent("td").siblings("td").eq(4).html();
+                let nomal = $(this).parent("td").siblings("td").eq(6).html();
+                let overtime = $(this).parent("td").siblings("td").eq(7).html();
+                // 被修改的人的姓名
+                $("#dworkername").val(name);
+                // 呗修改的人的 非加班工日
+                $("#dnomal").val(nomal);
+                // 被修改人的 加班工日
+                $("#dovertime").val(overtime);
+                $("#changegongshiSubmit").attr("work_h_id", $(this).attr("work_h_id"));
+                $("#changegongshiSubmit").attr("worker_id",$(this).attr("worker_id"));
+
+            });
+
+        });
+    };
+    $("#changegongshiSubmit").click(function () {
+        let worker_id = $(this).attr("worker_id");
+        let name = $("#dworkername").val();
+        let nomal = $("#dnomal").val();
+        let overtime = $("#dovertime").val();
+        let note = $("#dbeizhu").val();
+        console.log($(this).attr("work_h_id"), name, nomal, overtime, note);
+        $.post(orig + "/leader/workhours/applymodify/", {
+            "worker_id":worker_id,
+            "work_hour_id": $(this).attr("work_h_id"),
+            "nomal": nomal,
+            "overtime": overtime,
+            "note": note
+        }, function (result) {
+            $("#changegongshibtn").click();
+            if(result.msg == "申请成功"){
+                toastr.success("申请成功！")
+            }else{
+                toastr.error("申请失败！")
+            }
+
+        });
+        return false;
+    });
+
+    getWork();
+</script>
+
+

@@ -1,0 +1,47 @@
+<div>
+{#    <table class="table tab-css tab-hover" style="width: 20%">#}
+{#        <tr>#}
+{#            <th>项目名称:</th>#}
+{#            <th style="background-color: white">蛇口项目</th>#}
+{#        </tr>#}
+{#    </table>#}
+</div>
+<table class="table tab-css tab-hover" style="vertical-align:middle; text-align: center" id="modifiylist">
+
+</table>
+<script>
+    $.get(orig + "/leader/show/modify/", {}, function (request) {
+        console.log(request)
+        let data = request.data.modifier;
+        let v = '<tr>\n' +
+            '<th style="text-align:center; width: 2%">编号</th>\n' +
+            '<th style="text-align:center; width: 3%">姓名</th>\n' +
+            '<th style="text-align:center; width: 5%">修改日期</th>\n' +
+            '<th style="text-align:center; width: 5%">上次修改日期</th>\n' +
+            '<th style="text-align:center; width: 5%">修改人</th>\n' +
+            '<th style="text-align:center; width: 5%">修改字段</th>\n' +
+            '<th style="text-align:center; width: 5%">初始值</th>\n' +
+            '<th style="text-align:center; width: 5%">修改值</th>\n' +
+            '<th style="text-align:center; width: 8%">备注</th>\n' +
+            '</tr>';
+        $("#modifiylist").html(v);
+        if (data.length == 0) {
+            $("#modifiylist").append('<tr><td colspan="9">暂无内容</td></tr>')
+        }
+        for (let i = 0; i < data.length; i++) {
+            v = '<tr>\n' +
+                '<td>' + data[i].record_id + '</td>\n' +
+                '<td>' + data[i].worker_name + '</td>\n' +
+                '<td>' + data[i].change_date + '</td>\n' +
+                '<td>' + data[i].data_date + '</td>\n' +
+                '<td>' + data[i].manager + '</td>\n' +
+                '<td>' + data[i].column + '</td>\n' +
+                '<td>' + data[i].original_data + '元</td>\n' +
+                '<td>' + data[i].change_data + '元</td>\n' +
+                '<td>' + data[i].note + '</td>\n' +
+                '</tr>';
+            $("#modifiylist").append(v);
+        }
+    })
+</script>
+

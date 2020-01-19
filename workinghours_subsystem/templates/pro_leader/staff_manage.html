@@ -1,0 +1,359 @@
+<style>
+    .navigation {
+        margin-left: 40%;
+    }
+
+    .pagination li a {
+        display: block;
+        border: 1px solid #ccc;
+        width: 25px;
+        height: 25px;
+        padding-left: 6px;
+        background-color: #f9f9f9;
+    }
+
+    .pagination li a:hover {
+        background-color: #efffff;
+    }
+
+    .pagactive {
+        background-color: #ccc;
+    }
+</style>
+<div class="manage-head">
+    <table class="table tab-css tab-hover" style="width: 20%">
+        <tr>
+            <th>项目名称:</th>
+            <th>
+                <select name="" id="select" style="width: 100%">
+
+                </select>
+            </th>
+        </tr>
+    </table>
+</div>
+<div class="manage-content">
+    <table class="table tab-css tab-hover" id="workeslis" style="vertical-align:middle; text-align: center">
+
+    </table>
+</div>
+<div style="width:100%;margin-bottom: 10px">
+    <div>
+        <nav aria-label="Page navigation" class="navigation">
+            <ul class="pagination" id="pagination">
+
+            </ul>
+        </nav>
+    </div>
+    <div>
+        <button class="btn btn-primary sort" style="float: right" id="addStaff">新增员工</button>
+    </div>
+</div>
+<!--添加员工 模态框-->
+<div class="modal fade" id="addStaffModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <h4 style="padding-top: 15px;padding-left: 15px">添加员工</h4>
+            <div class="modal-body">
+                <table class="table" style="margin-bottom:0px;">
+                    <tbody>
+                    <tr>
+                        <td wdith="40%">员工姓名:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" maxlength="18" id="workername" required
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="40%">项目名称:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" readonly value="" maxlength="18" pro_id=""
+                                   id="projectname" autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="40%">身份证:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" maxlength="18"
+                                   oninput="value=value.replace(/[^\dXx]/g,'')" id="workeridcard" required
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="40%">电话号码:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" maxlength="11" id="workertelephone"
+                                   oninput="value=value.replace(/[^\d]/g,'')" required
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="40%">工种:</td>
+                        <td width="60%">
+                            <select name="" id="workertype">
+
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="40%">日薪标准:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" id="daysalary"
+                                   oninput="value=value.replace(/[^\d]/g,'')" required maxlength="18" i
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr></tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-target="#addStaffModal" id="addStaffModalbtn"
+                        data-toggle="modal" class="cancel">取消
+                </button>
+                <button class="btn btn-primary" id="addWorkerSubmit">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--修改员工 模态框-->
+<div class="modal fade" id="changeStaffModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <h4 style="padding-top: 15px;padding-left: 15px">修改员工信息</h4>
+            <div class="modal-body">
+                <table class="table" style="margin-bottom:0px;">
+                    <tbody>
+                    <tr>
+                        <td wdith="40%">员工姓名:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" maxlength="18" id="cworkername" required
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="40%">项目名称:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" readonly value="" maxlength="18" pro_id=""
+                                   id="cprojectname" autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="40%">身份证:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" maxlength="18"
+                                   oninput="value=value.replace(/[^\dXx]/g,'')" id="cworkeridcard" required
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="40%">电话号码:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" maxlength="11" id="cworkertelephone"
+                                   oninput="value=value.replace(/[^\d]/g,'')" required
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="40%">工种:</td>
+                        <td width="60%">
+                            <select name="" id="cworkertype">
+
+                            </select>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr></tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-target="#changeStaffModal"
+                        id="changeStaffModalbtn"
+                        data-toggle="modal">取消
+                </button>
+                <button class="btn btn-primary" id="changeWorkerSubmit">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 获取工种
+    $.get(orig + "/leader/add/worker/", {}, function (request) {
+        let data = request.data.worker_type;
+        let v = '';
+        for (let i = 0; i < data.length; i++) {
+            v += '<option value="' + data[i].worker_type_id + '">' + data[i].type_name + '</option>';
+        }
+        $("#workertype").html(v);
+        $("#cworkertype").html(v);
+    });
+
+    // 添加员工按钮
+    $("#addStaff").click(function () {
+        $("#addStaffModalbtn").click();
+        let project_name = $("#select option:selected").html();
+        let project_id = $("#select option:selected").attr("value");
+        $("#projectname").val(project_name);
+        $("#projectname").attr("pro_id", project_id);
+        return false;
+    });
+    // 添加员工提交按钮
+    $("#addWorkerSubmit").click(function () {
+        let project_id = $("#projectname").attr("pro_id");
+        let workername = $("#workername").val();
+        let workeridcard = $("#workeridcard").val();
+        let workertelephone = $("#workertelephone").val();
+        let workertype = $("#workertype").val();
+        let daysalary = $("#daysalary").val();
+        $.post(orig + "/leader/add/worker/", {
+            worker_name: workername,
+            pro_name_id: project_id,
+            id_card: workeridcard,
+            telephone: workertelephone,
+            type_id: workertype,
+            das_salary: daysalary
+        }, function () {
+            getw(project_id, $(".exitorenter").eq(0).attr("nowpage"));
+            $("#projectname").val("");
+            $("#workername").val("");
+            $("#workeridcard").val("");
+            $("#workertelephone").val("");
+            $("#workertype").val("");
+            $("#daysalary").val("");
+            $("#addStaffModalbtn").click();
+            toastr.success("添加员工成功！")
+        });
+        return false;
+    });
+    // 获取 项目选项
+    $.get(orig + "/leader/mine/pro/", {}, function (request) {
+        var data = request.data.mine_pro;
+        getw(data[0].project_id);
+        let v = "";
+        for (let i = 0; i < data.length; i++) {
+            v += '<option value="' + data[i].project_id + '">' + data[i].project_name + '</option>';
+        }
+        $("#select").html(v);
+    });
+    // 选项 事件
+    $("#select").change(function () {
+        let pro_id = $("#select option:selected").attr("value");
+        getw(pro_id);
+    });
+
+    var getw = function getworker(pro_id, page) {
+        $.post(orig + "/leader/mine/pro/", {"pro_id": pro_id, "page": page}, function (request) {
+            let data = request.data.workers;
+            let v = '<tr>\n' +
+                '            <th style="text-align:center; width: 2%">编号</th>\n' +
+                '            <th style="text-align:center; width: 3%">姓名</th>\n' +
+                '            <th style="text-align:center; width: 5%">项目名</th>\n' +
+                '            <th style="text-align:center; width: 8%">身份证</th>\n' +
+                '            <th style="text-align:center; width: 5%">电话号码</th>\n' +
+                '            <th style="text-align:center; width: 3%">工种</th>\n' +
+                '            <th style="text-align:center; width: 5%">日薪标准</th>\n' +
+                '            <th style="text-align:center; width: 5%">入场日期</th>\n' +
+                '            <th style="text-align:center; width: 5%">离场日期</th>\n' +
+                '            <th style="text-align:center; width: 5%">员工状态</th>\n' +
+                '            <th style="text-align:center; width: 5%">操作</th>\n' +
+                '        </tr>';
+            $("#workeslis").html(v);
+            if (data.length == 0) {
+                $("#workeslis").append('<tr><td colspan="11">暂无内容</td></tr>')
+            }
+            for (let i = 0; i < data.length; i++) {
+                let unstatus = '';
+                if (data[i].status == '在场') {
+                    unstatus = '退场'
+                } else {
+                    unstatus = '回场'
+                }
+                v = '<tr>\n' +
+                    '            <td>' + data[i].worker_id + '</td>\n' +
+                    '            <td>' + data[i].worker + '</td>\n' +
+                    '            <td>' + data[i].pro_name + '</td>\n' +
+                    '            <td>' + data[i].id_number + '</td>\n' +
+                    '            <td>' + data[i].phone_nmber + '</td>\n' +
+                    '            <td>' + data[i].worker_type + '</td>\n' +
+                    '            <td>' + data[i].das_salary + '/天</td>\n' +
+                    '\n' +
+                    '            <td>' + data[i].entry_data + '</td>\n' +
+                    '            <td>' + data[i].leave_data + '</td>\n' +
+                    '            <td>' + data[i].status + '</td>\n' +
+                    '            <td><a href="javascript:;" pro_id="' + data[i].project_name_id + '" nowpage="' + request.data.nowpage + '"class="changeworker" workerid=' + data[i].worker_id + '>修改</a>/' +
+                    '<a href="javascript:;" pro_id="' + data[i].project_name_id + '" nowpage="' + request.data.nowpage + '" class="exitorenter" workerid=' + data[i].worker_id + '>' + unstatus + '</a></td>\n' +
+                    '        </tr>';
+                $("#workeslis").append(v);
+            }
+            ;
+
+            // 退场按钮事件
+            $(".exitorenter").click(function () {
+                $.post(orig + '/leader/exitorenter/worker/', {workerid: $(this).attr("workerid")}, function (request) {
+                    toastr.success(request.msg);
+                    getw($(".exitorenter").eq(0).attr("pro_id"), $(".exitorenter").eq(0).attr("nowpage"));
+                })
+            });
+
+            // 修改员工资料事件
+            $(".changeworker").click(function () {
+                $("#changeStaffModalbtn").click();
+                $("#cworkername").attr("workerid", $(this).parent("td").siblings().eq(0).html());
+                let project_name = $("#select option:selected").html();
+                let procject_id = $("#select option:selected").attr("value");
+                $("#cprojectname").val(project_name);
+                $("#cprojectname").attr("pro_id", procject_id);
+                $("#cworkername").val($(this).parent("td").siblings().eq(1).html());
+                $("#cworkeridcard").val($(this).parent("td").siblings().eq(3).html());
+                $("#cworkertelephone").val($(this).parent("td").siblings().eq(4).html());
+                let opt = $(this).parent("td").siblings().eq(5).html();
+                $("#cworkertype").val(opt);
+                let money = String($(this).parent("td").siblings().eq(6).html());
+
+            });
+            // 确定修改按钮
+            $("#changeWorkerSubmit").click(function () {
+                let v = $("#cworkertype").val();
+                if (v == "" || v == null){
+                    $("#cworkertype").css("border","solid 1px red");
+                    return ;
+                }
+                $.post(orig + "/leader/change/worker/", {
+                    "workerid": $("#cworkername").attr("workerid"),
+                    "workername": $("#cworkername").val(),
+                    "workeridcard": $("#cworkeridcard").val(),
+                    "workertelephone": $("#cworkertelephone").val(),
+                    "workertype": $("#cworkertype").val(),
+                }, function (result) {
+                    if (result.msg == "修改成功") {
+                        toastr.success("修改成功！")
+                    } else {
+                        toastr.warning("修改失败！")
+                    }
+                    getw($(".changeworker").eq(0).attr("pro_id"),$(".changeworker").eq(0).attr("nowpage"));
+                    $("#changeStaffModalbtn").click();
+                })
+            });
+
+            // 分页按钮区
+            let vc = '<li><a href="#" aria-label="Previous"> <span aria-hidden="true">&laquo;</span></a></li>';
+            let pag = request.data.page_num;
+            for (let i = 0; i < pag; i++) {
+                vc += '<li><a href="javascript:;" onclick="getw(' + data[0].project_name_id + ',' + (i + 1) + ')">' + (i + 1) + '</a></li>'
+            }
+            vc += '<li><a href="#" aria-label="Next"> <span aria-hidden="true">&raquo;</span></a></li>';
+            $("#pagination").html(vc);
+            $("#pagination li").click(function () {
+                $("#pagination li").removeClass("pagactive");
+                $(this).addClass("pagactive");
+            })
+        });
+
+    };
+
+</script>

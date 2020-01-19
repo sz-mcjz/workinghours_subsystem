@@ -1,0 +1,76 @@
+<div>
+    <table class="table tab-css tab-hover" style="width:20%">
+        <tr>
+            <th>项目名称:</th>
+            <th>
+                <select name="" id="select" style="width: 100%">
+
+                </select>
+            </th>
+
+        </tr>
+    </table>
+</div>
+<table class="table tab-css tab-hover" style="vertical-align:middle; text-align: center" id="project_list">
+
+</table>
+
+<script>
+    $.get(orig + "/financial/data/projectinfo/", {}, function (request) {
+        var data = request.data.mine_pro;
+
+        let v = "";
+        for (let i = 0; i < data.length; i++) {
+            v += '<option value="' + data[i].project_id + '">' + data[i].project_name + '</option>';
+        }
+        $("#select").html(v);
+        $("#select").change(function () {
+            let pro_id = $("#select option:selected").attr("value");
+            getworker1(pro_id);
+        });
+    });
+
+    var getworker1 = function (pro_id) {
+        console.log(pro_id);
+        $.post(orig + "/financial/data/projectinfo/", {pro_id: pro_id}, function (request) {
+            let data = request.data.workers;
+            let v = '<tr>\n' +
+                '<th style="text-align:center; width: 3%">员工编号</th>\n' +
+                '<th style="text-align:center; width: 4%">姓名</th>\n' +
+                '<th style="text-align:center; width: 5%">工种</th>\n' +
+                '<th style="text-align:center; width: 5%">在岗状态</th>\n' +
+                '<th style="text-align:center; width: 5%">工资标准</th>\n' +
+                '<th style="text-align:center; width: 5%">积累应发工资</th>\n' +
+                '<th style="text-align:center; width: 5%">积累非加班工资</th>\n' +
+                '<th style="text-align:center; width: 5%">积累加班工资</th>\n' +
+                '<th style="text-align:center; width: 5%">积累实发工资</th>\n' +
+                '<th style="text-align:center; width: 5%">累计工时</th>\n' +
+                '<th style="text-align:center; width: 5%">非加班工时</th>\n' +
+                '<th style="text-align:center; width: 5%">加班工时</th>\n' +
+                '</tr>';
+            $("#project_list").html(v);
+            if (data.length == 0) {
+                $("#project_list").append('<tr><td colspan="12">暂无内容</td></tr>')
+            }
+            for (let i = 0; i < data.length; i++) {
+                v = '<tr>\n' +
+                    '<td>' + data[i].worker_id + '</td>\n' +
+                    '<td>' + data[i].worker + '</td>\n' +
+                    '<td>' + data[i].work_type + '</td>\n' +
+                    '<td>' + data[i].status + '</td>\n' +
+                    '<td>' + data[i].das_salary + '</td>\n' +
+                    '<td>' + data[i].all_salary + '</td>\n' +
+                    '<td>' + data[i].day_salary + '</td>\n' +
+                    '<td>' + data[i].over_salary + '</td>\n' +
+                    '<td>' + data[i].salary + '</td>\n' +
+                    '<td>' + data[i].all_day + '</td>\n' +
+                    '<td>' + data[i].work_day + '</td>\n' +
+                    '<td>' + data[i].overtime + '</td>\n' +
+                    '</tr>';
+                $("#project_list").append(v);
+            }
+        })
+    };
+    getworker1();
+</script>
+

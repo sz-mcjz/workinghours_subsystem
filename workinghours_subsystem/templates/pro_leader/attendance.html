@@ -1,0 +1,145 @@
+<style>
+    .newinput {
+        height: 25px;
+        padding: 0 !important;
+    }
+</style>
+<div>
+    <table class="table tab-css tab-hover" style="width: 20%">
+        <tr>
+            <th>项目名称:</th>
+            <th>
+                <select name="" id="projectselect" style="width: 100%">
+
+                </select>
+            </th>
+        </tr>
+    </table>
+</div>
+<table class="table tab-css tab-hover" style="vertical-align:middle; text-align: center" id="attendManage">
+
+</table>
+<div style="width:100%;margin-bottom: 10px;padding: 10px">
+    <button class="btn btn-primary sort" style="float: right" id="Submit" data-target="#Remind" data-toggle="modal">提交
+    </button>
+</div>
+
+<div class="modal fade" id="Remind" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     style="margin-top: 200px">
+    <div class="modal-dialog" role="document">
+        <form action="" method="post">
+            <div class="modal-content">
+                <h4 style="padding-top: 15px;padding-left: 15px">友情提示</h4>
+                <div class="modal-body">
+                    <h6>员工工时每日只能填写一次，请仔细检查谨慎填写。</h6>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-target="#Remind" id="Remind"
+                            data-toggle="modal" class="cancel">取消
+                    </button>
+                    <button class="btn btn-primary" id="workhoursubmit2">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $.get(orig + "/leader/mine/pro/", {}, function (request) {
+        var data = request.data.mine_pro;
+        getw(data[0].project_id);
+        let v = "";
+        for (let i = 0; i < data.length; i++) {
+            v += '<option value="' + data[i].project_id + '">' + data[i].project_name + '</option>';
+        }
+        $("#projectselect").html(v);
+    });
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+
+    function onlyNumber(obj) {
+        var t = obj.value.charAt(0);
+        obj.value = obj.value.replace(/[^\d\.]/g, '');
+        obj.value = obj.value.replace(/^\./g, '');
+        obj.value = obj.value.replace(/\.{2,}/g, '.');
+        obj.value = obj.value.replace('.', '$#$').replace(/\./g, '').replace('$#$', '.');
+
+        return obj.value
+    }
+
+    $("#projectselect").change(function () {
+        let pro_id = $("#projectselect option:selected").attr("value");
+
+        getw(pro_id);
+    });
+    var getw = function getworker(pro_id, page) {
+        $.get(orig + "/leader/notinput/worker/", {"pro_id": pro_id, "page": page}, function (request) {
+            let data = request.data.workers;
+            let v = '<tr>\n' +
+                '        <th style="text-align:center; width: 6%">编号</th>\n' +
+                '        <th style="text-align:center; width: 6%">姓名</th>\n' +
+                '        <th style="text-align:center; width: 6%">身份证</th>\n' +
+                '        <th style="text-align:center; width: 5%">工种</th>\n' +
+                '        <th style="text-align:center; width: 5%">非加班工日</th>\n' +
+                '        <th style="text-align:center; width: 5%">加班工日</th>\n' +
+                '        <th style="text-align:center; width: 5%">总工时</th>\n' +
+                '        <th style="text-align:center; width: 6%">入场日期</th>\n' +
+                '        <th style="text-align:center; width: 6%">离场日期</th>\n' +
+                '        <th style="text-align:center; width: 6%">备注</th>\n' +
+                '    </tr>';
+            $("#attendManage").html(v);
+            if (data.length==0){
+                $("#attendManage").append('<tr><td colspan="10">今日已经提交</td></tr>')
+            }
+            for (let i = 0; i < data.length; i++) {
+                v = '<tr class="workertr">\n' +
+                    '        <td pro_id="'+data[i].project_name_id +'">' + data[i].worker_id + '</td>\n' +
+                    '        <td>' + data[i].worker + '</td>\n' +
+                    '        <td>' + data[i].id_number + '</td>\n' +
+                    '        <td>' + data[i].worker_type + '</td>\n' +
+                    '        <td><input workerid="'+ data[i].worker_id +'" class="form-control newinput " oninput="value=onlyNumber(this)" data-toggle="tooltip" required\n' +
+                    '                   data-placement="bottom" title="输入只能是数字或小数" type="text"></td>\n' +
+                    '        <td><input class="form-control newinput" oninput="value=onlyNumber(this)" data-toggle="tooltip" required\n' +
+                    '                   data-placement="bottom" title="输入只能是数字或小数" type="text" type="text"></td>\n' +
+                    '        <td class="zonggongshi"></td>\n' +
+                    '        <td>' + data[i].entry_data + '</td>\n' +
+                    '        <td>' + data[i].leave_data + '</td>\n' +
+                    '        <td><input class="form-control newinput " data-toggle="tooltip" type="text"></input></td>\n' +
+                    '    </tr>';
+                $("#attendManage").append(v);
+            }
+        })
+    };
+
+     $("#workhoursubmit2").click(function () {
+        let tr = $(".workertr");
+        var attend_data = [];
+        var pro_id = $("#projectselect").val();
+
+        for (let i = 0; i < tr.length; i++) {
+            let workerid = tr.eq(i).children("td").children('input').eq(0).attr("workerid");
+            let normal = tr.eq(i).children("td").children('input').eq(0).val();
+            let extra = tr.eq(i).children("td").children('input').eq(1).val();
+            let note = tr.eq(i).children("td").children('input').eq(2).val();
+            if(workerid=="" || normal=="" || extra==""){
+                tr.eq(i).css("border","1px red solid");
+                return false;
+            }
+            attend_data.push({"id":workerid, "normal":normal, "extra":extra,"note":note});
+        }
+        $.post(orig + "/leader/attend/worker/",{"attendance_data":JSON.stringify(attend_data),"pro_id":pro_id},function (result) {
+            console.log(result);
+            getw(result.data);
+            if(result.msg == "录入列表为空"){
+                toastr.error(result.msg);
+            }
+            else{
+                toastr.success("提交成功！");
+            }
+            $("#Remind").click();
+        });
+
+        return false;
+    });
+</script>

@@ -1,3 +1,5 @@
+import datetime
+
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.urls import reverse
@@ -83,3 +85,29 @@ def profile(request):
                 return JsonResponse(data={"msg": "密码错误。"}, json_dumps_params={'ensure_ascii': False})
         else:
             return JsonResponse(data={'msg': '内容不能为空。'}, json_dumps_params={'ensure_ascii': False})
+
+open_list = []
+see_list = []
+def sendonline(request):
+    uuid = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))
+    user = Staff.objects.get(telephone=uuid)
+    if not user:
+        return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
+    nowtime = datetime.datetime.now()
+    if request.method == "GET":
+        imline = request.GET.get("online_type")
+        if imline == "open":
+            open_list.append(user)
+            print(user.username,"正在打开系统")
+        elif imline == "see":
+            see_list.append(user)
+            print(user.username, "正在浏览系统页面")
+        return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
+    elif request.method == "POST":
+        return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
+
+
+def getonline(request):
+
+    if request.method == "GET":
+        return render_to_response('online.html')

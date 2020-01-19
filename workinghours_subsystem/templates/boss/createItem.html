@@ -1,0 +1,287 @@
+<div>
+    <form method="post">
+
+        <h2>项目管理</h2>
+        <hr>
+        <table class="table tab-css tab-hover" id="projectsid">
+
+
+        </table>
+
+        <div style="height: 25px">
+            <footer class="message_footer">
+                <nav style="margin-right: 40px;float: right">
+                    <ul class="pagination pagenav">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addItem"
+                                title="再来一行！" id="add">新增项目
+                        </button>
+                    </ul>
+                </nav>
+            </footer>
+        </div>
+    </form>
+
+</div>
+
+<!-- 新增项目-->
+<div class="modal fade" id="addItem" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <form>
+            <div class="modal-content" style="margin-top: 300px">
+                <h4 style="padding-top: 15px;padding-left: 15px">新增项目</h4>
+                <div class="modal-body">
+                    <table class="table" style="margin-bottom:0px;" id="changepwd">
+                        <tbody>
+                        <tr>
+                            <td wdith="20%">项目名称:</td>
+                            <td width="80%">
+                                <input type="text" class="form-control"
+                                       maxlength="18" value="" id="itemName"
+                                       autocomplete="off"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td wdith="20%">负责人:</td>
+                            <td width="80%">
+                                <select class="form-control" name="recipient" id="id_select2_demo4" style="width: 100%">
+
+                                </select>
+                                {#                                <script>var selectorx = $('#id_select2_demo4').select2();</script>#}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td wdith="20%">结束时间:</td>
+                            <td width="80%">
+                                <input type="date" class="form-control"
+                                       maxlength="18" value="" id="endtime"
+                                       autocomplete="off"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td wdith="20%">备注:</td>
+                            <td width="80%"><textarea type="textarea" class="form-control" rows="5" cols="10"
+                                                      id="remarks"
+                                                      autocomplete="off"></textarea>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-target="#addItem"
+                            data-toggle="modal" class="cancel">取消
+                    </button>
+                    <button class="btn btn-primary" id="submitAddItem">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 修改项目-->
+<div class="modal fade modifyItem" id="" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <form action="" method="post">
+            <div class="modal-content" style="margin-top: 300px">
+                <h4 style="padding-top: 15px;padding-left: 15px">修改项目</h4>
+                <div class="modal-body">
+                    <table class="table" style="margin-bottom:0px;" id="changepwds">
+                        <tbody>
+                        <tr>
+                            <td wdith="20%">项目名称:</td>
+                            <td width="80%">
+                                <input type="text" class="form-control"
+                                       maxlength="18" value="" id="itemNames"
+                                       autocomplete="off"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td wdith="20%">负责人:</td>
+                            <td width="80%">
+                                <select class="form-control" name="recipient" id="id_select2_demo5" style="width: 100%">
+
+                                </select>
+                            </td>
+                        </tr>
+                        {#                        <tr>#}
+                        {#                            <td wdith="20%">结束时间:</td>#}
+                        {#                            <td width="80%">#}
+                        {#                                <input type="date" class="form-control"#}
+                        {#                                       maxlength="18" value="" id="endtimes"#}
+                        {#                                       autocomplete="off"/>#}
+                        {#                            </td>#}
+                        {#                        </tr>#}
+                        {#                        <tr>#}
+                        {#                            <td wdith="20%">备注:</td>#}
+                        {#                            <td width="80%"><textarea type="textarea" class="form-control" rows="5" cols="10"#}
+                        {#                                                      id="remarkss"#}
+                        {#                                                      autocomplete="off"></textarea>#}
+                        {#                            </td>#}
+                        {#                        </tr>#}
+                        </tbody>
+                        <tfoot>
+                        <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-target="#modifyItem"
+                            data-toggle="modal" class="cancel">取消
+                    </button>
+                    <button class="btn btn-primary" id="submitModify">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--删除项目-->
+<div class="modal fade delItem" id="" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     style="top:30%;left:20%;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <p class="delTxtTip"></p>
+                <p class="delId"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-primary" id="submitDel">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    textarea {
+        resize: none;
+    }
+
+    .delTxtTip {
+        color: #868e96;
+        text-align: center;
+        font-size: 18px;
+    }
+
+    .delId {
+        display: none;
+    }
+</style>
+<script>
+    $.get(orig + "/boss/create/pro/", {}, function (result) {
+        let value = result.data.pro_leader;
+        let projects = result.data.all_pro;
+        let v = '';
+        let u = '            <tr>\n' +
+            '                <td style="width: 5%">编号</td>\n' +
+            '                <td style="width: 12%">项目名称</td>\n' +
+            '                <td style="width: 5%">负责人</td>\n' +
+            '                <td style="width: 10%">联系方式</td>\n' +
+            '                <td style="width: 10%">结束时间</td>\n' +
+            '                <td style="width: 20%">备注</td>\n' +
+            '                <td style="width: 20%">操作</td>\n' +
+            '            </tr>';
+
+        for (let i = 0; i < projects.length; i++) {
+            u += '<tr>\n' +
+                '                <td>' + projects[i].project_id + '</td>\n' +
+                '                <td>' + projects[i].project_name + '</td>\n' +
+                '                <td>' + projects[i].pro_leader_name + '</td>\n' +
+                '                <td>' + projects[i].pro_leader_telephone + '</td>\n' +
+                '                <td>' + projects[i].overtime + '</td>\n' +
+                '                <td>' + projects[i].note + '</td>\n' +
+                '                <td>\n' +
+                '                    <button type="button" value="' + projects[i].project_id + '" class="btn modify btn-primary" name="change" data-toggle="modal"\n' +
+                '                            data-target="#modifyItem">修改\n' +
+                '                    </button>\n' +
+                '                    <button type="button" value="' + projects[i].project_id + '" class="btn del btn-primary deletepro" name="exit" data-toggle="modal" data-target="#delItem">删除</button>\n' +
+                '                </td>\n' +
+                '            </tr>'
+        }
+        $("#projectsid").html(u);
+        // 删除项目
+        $(".del").click(function () {
+            $(".delItem").attr("id", "delItem");
+            var tdTxt = $(this).parents("tr").find("td");
+            var idTxt = tdTxt.eq(0).text();
+            $(".delId").text(idTxt);
+            $(".delTxtTip").text("是否要删除" + tdTxt.eq(1).text() + "?")
+        });
+        $("#submitDel").click(function () {
+            $.post(orig + "/boss/delete/pro/", {"pro_id": $(".delId").text()}, function (request) {
+                window.location.replace(orig + "/boss/index/");
+
+            });
+        });
+        // 修改项目
+        $(".modify").click(function () {
+            $(".modifyItem").attr("id", "modifyItem");
+            var tdTxt = $(this).parents("tr").find("td");
+            $("#itemNames").attr("proid", tdTxt.eq(0).text());
+            $("#itemNames").val(tdTxt.eq(1).text())
+            $("#userNames").val(tdTxt.eq(2).text())
+            $("#remarkss").val(tdTxt.eq(5).text())
+            var dateTime = tdTxt.eq(4).text().split("/")
+            var year = dateTime[0]
+            var month = dateTime[1]
+            var day = dateTime[2]
+            if (month < 9) {
+                month = "0" + month
+            }
+            if (day < 9) {
+                day = "0" + day
+            }
+            dateTime = year + "-" + month + "-" + day
+
+            $("#endtimes").val(dateTime)
+        });
+
+        $("#submitModify").click(function () {
+            var proid = $("#itemNames").attr("proid");
+            var pro_newname = $("#itemNames").val();
+            var user_id = $("#id_select2_demo5").val();
+            var remarkss = $("#remarkss").val();
+            console.log(proid, pro_newname, user_id, remarkss);
+            $.post(orig + "/boss/modify/pro/", {
+                "pro_id": proid,
+                "pro_leader": user_id,
+                "pro_name": pro_newname,
+                "note": remarkss
+            }, function (result) {
+                window.location.replace(orig + "/boss/index/");
+            });
+            return false;
+        });
+
+        for (let i = 0; i < value.length; i++) {
+            v += '<option value="' + value[i].staff_id + '">' + value[i].username + '</option>';
+        }
+        $("#id_select2_demo4").html(v);
+        $("#id_select2_demo5").html(v);
+
+    });
+
+    // 新增项目
+    $("#submitAddItem").click(function () {
+        var itemName = $("#itemName").val();
+        var userName = $("#id_select2_demo4").val();
+        var endtime = $("#endtime").val();
+        var remarks = $("#remarks").val();
+        $.post(orig + '/boss/create/pro/', {
+            'pro_name': itemName,
+            'pro_leader': userName,
+            'overtime': endtime,
+            'remarks': remarks
+        }, function (result) {
+            window.location.replace(orig + "/boss/index/");
+        });
+        return false;
+    });
+</script>

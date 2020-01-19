@@ -5,29 +5,72 @@
 {% block _index %}
     {% url 'boss_index' %}
 {% endblock %}
-
-
 {% block components %}
     <li>
-        <a href="#" class="has-dropdown"><i
+        <a href="#" class="boss-nav"><i
                 class="ion ion-ios-book-outline"></i><span>项目管理</span></a>
         <ul class="menu-dropdown">
         </ul>
     </li>
+    {#    <li>#}
+    {#        <a href="#" class="boss-nav"><i class="ion ion-edit"></i><span>员工管理</span></a>#}
+    {#        <ul class="menu-dropdown">#}
+    {#        </ul>#}
+    {#    </li>#}
+    {#    <li>#}
+    {#        <a href="#" class="boss-nav"><i class="ion ion-flag"></i><span>工资管理</span></a>#}
+    {#        <ul class="menu-dropdown">#}
+    {#        </ul>#}
+    {#    </li>#}
     <li>
-        <a href="#" class="has-dropdown"><i class="ion ion-edit"></i><span>员工管理</span></a>
+        <a href="#" class="has-dropdown"><i class="ion ion-ios-albums-outline"></i>统计分析<span></span></a>
         <ul class="menu-dropdown">
-        </ul>
-    </li>
-    <li>
-        <a href="#" class="has-dropdown"><i class="ion ion-flag"></i><span>工资管理</span></a>
-        <ul class="menu-dropdown">
-        </ul>
-    </li>
-    <li>
-        <a href="" class="has-dropdown"><i class="ion ion-ios-albums-outline"></i>统计分析<span></span></a>
-        <ul class="menu-dropdown">
-            <li><a href=""><i class="ion ion-ios-circle-outline"></i>考勤修改记录</a></li>
+            <li><a class="statistic-list" href="javascript:;"><i class="ion ion-ios-circle-outline"></i>月统计</a></li>
+            <li><a class="statistic-list" href="javascript:;"><i class="ion ion-ios-circle-outline"></i>单项目</a></li>
+            <li><a class="statistic-list" href="javascript:;"><i class="ion ion-ios-circle-outline"></i>工种</a></li>
         </ul>
     </li>
 {% endblock %}
+{% block yangJS %}
+    <script>
+        $.post(orig + "/boss/createItem/", {}, function (request) {
+            $(".main-content").eq(0).html(request)
+        });
+        $(".boss-nav").click(function () {
+            console.log($(this).parent().index())
+            if ($(this).parent().index() == 1) {
+                $.post(orig + "/boss/createItem/", {}, function (request) {
+                    $(".main-content").eq(0).html(request)
+                })
+            } else if ($(this).parent().index() == 2) {
+                $.post(orig + "/boss/personAdmin/", {}, function (request) {
+                    $(".main-content").eq(0).html(request)
+                })
+            } else if ($(this).parent().index() == 3) {
+                $.post(orig + "/boss/salaryAdmin/", {}, function (request) {
+                    $(".main-content").eq(0).html(request)
+                })
+            }
+        });
+        $(".statistic-list").click(function () {
+            $(".leadera").parents("li").removeClass("active");
+            if ($(this).parent().index() == 0) {
+                $.post(orig + "/financial/statisticMonth/", {}, function (request) {
+                    $(".main-content").eq(0).html(request)
+                })
+            } else if ($(this).parent().index() == 1) {
+                $.post(orig + "/financial/statisticSingle/", {}, function (request) {
+                    $(".main-content").eq(0).html(request)
+                })
+            } else if ($(this).parent().index() == 2) {
+                $.post(orig + "/financial/statisticTypeWork/", {}, function (request) {
+                    $(".main-content").eq(0).html(request)
+                })
+            }
+        })
+    </script>
+{% endblock %}
+
+
+
+

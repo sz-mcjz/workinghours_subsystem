@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{% static 'flag-icon-css/css/flag-icon.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/demo.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
 
     <style>
         .row .table tr th:nth-child(1), .row .table tr th:nth-child(3),
@@ -131,16 +132,16 @@
                 </div>
                 {#                左边栏目#}
                 <ul class="sidebar-menu">
-                    <li class="menu-header">Dashboard</li>
-                    <li>
-                        <a href="{% block _index %}{% endblock %}">
-                            <i class="ion ion-speedometer"></i>
-                            <span>项目概览</span>
-                            {% block notice %}
-
-                            {% endblock %}
-                        </a>
-                    </li>
+                    {#                    <li class="menu-header">Dashboard</li>#}
+                    {#                    <li>#}
+                    {#                        <a href="{% block _index %}{% endblock %}">#}
+                    {#                            <i class="ion ion-speedometer"></i>#}
+                    {#                            <span>项目概览</span>#}
+                    {#                            {% block notice %}#}
+                    {##}
+                    {#                            {% endblock %}#}
+                    {#                        </a>#}
+                    {#                    </li>#}
                     <li class="menu-header">Components</li>
                     {% block components %}
 
@@ -268,6 +269,7 @@
         }
     });
 </script>
+<script src="{% static 'js/toastr.min.js' %}"></script>
 <script type="text/javascript">
     var orig = window.location.origin;
     $("body").append('<div class="demo-settings"><div class="demo-settings-toggle"><i class="ion ion-gear-a"></i></div><div class="demo-settings-options"><ul><li class="demo-toggle-skin" style="background-color: #574B90;" title="Default"></li><li class="demo-toggle-skin" style="background-color: #3F52E3;" title="Blue"></li><li class="demo-toggle-skin" style="background-color: #39065A;" title="Deep Purple"></li><li class="demo-toggle-skin" style="background-color: #3DC7BE;" title="Light Blue"></li><li class="demo-toggle-skin" style="background-color: #212330;" title="Dark Sidebar"></li></ul></div></div>');
@@ -328,13 +330,11 @@
         $.post(orig + "/profile/", {old_password: old_pwd, password: pwd, new_password: new_pwd}, function (result) {
             if (result.msg == "修改成功。") {
                 alert("修改成功!");
-                if (result.department_id == '1'){
+                if (result.department_id == '1') {
                     window.location.replace(orig + "/boss/index/");
-                }
-                else if (result.department_id == '3'){
+                } else if (result.department_id == '3') {
                     window.location.replace(orig + "/leader/index/");
-                }
-                else if (result.department_id == '7'){
+                } else if (result.department_id == '7') {
                     window.location.replace(orig + "/financial/index/");
                 }
 
@@ -354,5 +354,40 @@
         $(".close-nav").eq(0).show().css("margin-left", "50px").siblings("a").css("margin-left", "50px");
     }
 </script>
+<script>
+    //正在使用 发送请求
+    var online = setInterval(function () {
+        $.get(orig+"/sendonline/",{'online_type':'open'},function (request) {
+
+        });
+        console.log("正在使用");
+    }, 3000);
+    //正在浏览 发送请求
+    var interval_output = null;
+
+    function send_online() {
+        $.get(orig+"/sendonline/",{'online_type':'see'},function (request) {
+
+        });
+        console.log("正在浏览");
+    }
+    // window 失去焦点，停止输出
+    window.onblur = function () {
+        clearInterval(interval_output);
+    };
+    // window 每次获得焦点
+    window.onfocus = function () {
+        interval_output = setInterval(function () {
+            send_online();
+        }, 3000);
+    };
+    interval_output = setInterval(function () {
+        send_online();
+    }, 3000);
+</script>
+{% block shiJS %}
+{% endblock %}
+{% block yangJS %}
+{% endblock %}
 </body>
 </html>

@@ -1,0 +1,108 @@
+<div class="containers">
+    <div class="rows">
+        <div class="left">
+            <form method="post">
+                <table class="table tab-css tab-hover">
+                    <h2>待办事项</h2>
+                    <hr>
+                    <tr>
+                        <td style="width: 5%">编号</td>
+                        <td style="width: 8%">项目名称</td>
+                        <td style="width: 8%">负责人</td>
+                        <td style="width: 10%">日薪</td>
+                        <td style="width: 10%">修改为</td>
+                        <td style="width: 10%">操作</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>蛇口项目</td>
+                        <td>傅坚</td>
+                        <td>300</td>
+                        <td>500</td>
+                        <td>
+                             <button type="submit" class="btn btn-primary" name="change" data-toggle="button">审核</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>蛇口项目</td>
+                        <td>傅坚</td>
+                        <td>300</td>
+                        <td>500</td>
+                        <td>
+                             <button type="submit" class="btn btn-primary" name="change" data-toggle="button">审核</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>蛇口项目</td>
+                        <td>傅坚</td>
+                        <td>300</td>
+                        <td>500</td>
+                        <td>
+                             <button type="submit" class="btn btn-primary" name="change" data-toggle="button">审核</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>蛇口项目</td>
+                        <td>傅坚</td>
+                        <td>300</td>
+                        <td>500</td>
+                        <td>
+                             <button type="submit" class="btn btn-primary" name="change" data-toggle="button">审核</button>
+                        </td>
+                    </tr>
+                </table>
+
+         </form>
+        </div>
+        <div class="right">
+            <form method="post">
+                <table class="table tab-css tab-hover">
+                    <h2>员工管理</h2>
+                    <hr>
+                    <tr>
+                        <td style="width: 5%">编号</td>
+                        <td style="width: 8%">姓名</td>
+                        <td style="width: 10%">电话号码</td>
+                        <td style="width: 10%">备注</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 5%">编号</td>
+                        <td style="width: 8%">姓名</td>
+                        <td style="width: 10%">电话号码</td>
+                        <td style="width: 10%">备注</td>
+                    </tr>
+                </table>
+
+                <div style="height: 25px">
+                    <footer class="message_footer">
+                        <nav style="margin-right: 40px;float: right">
+                            <ul class="pagination pagenav">
+                                <button type="button" class="btn btn-primary"
+                                        title="再来一行！" id="add">新增项目
+                                </button>
+                            </ul>
+                        </nav>
+                    </footer>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.containers {
+    margin:0px;
+}
+.containers .rows {
+    display:flex;
+}
+.rows .left {
+    padding-right:30px;
+}
+.rows .left,.rows .right {
+    min-width:50%;
+}
+</style>

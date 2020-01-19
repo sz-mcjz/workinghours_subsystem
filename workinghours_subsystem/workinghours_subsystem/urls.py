@@ -11,6 +11,8 @@ urlpatterns = [
     path('logout/', db_api.logout, name='logout'),
     # 修改密码
     path('profile/', db_api.profile, name='profile'),
+    # send online
+    path('sendonline/', db_api.sendonline, name='sendonline'),
     # boss api 子路由
     path('boss/', include('boss.urls')),
     # leader api 子路由

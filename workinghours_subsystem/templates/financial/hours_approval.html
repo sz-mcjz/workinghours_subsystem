@@ -1,0 +1,107 @@
+<div>
+    <h2>工时审批：</h2>
+</div>
+<table class="table tab-css tab-hover" style="vertical-align:middle; text-align: center" id="modifiylist">
+
+</table>
+<!--申请处理 模态框-->
+<div class="modal fade" id="capply" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     style="margin-top: 200px">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <h4 style="padding-top: 15px;padding-left: 15px">申请处理备注</h4>
+            <div class="modal-body">
+                <table class="table" style="margin-bottom:0px;">
+                    <tbody>
+                    <tr>
+                        <td wdith="40%">备注:</td>
+                        <td width="60%">
+                            <input type="text" class="form-control" maxlength="18" id="applynote" required
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-target="#capply"
+                        id="capplybtn"
+                        data-toggle="modal">取消
+                </button>
+                <!-- 申请同意的话要修改  三张表 -->
+                <button class="btn btn-primary" id="capplySubmit">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    var getData = function () {
+        $.get(orig + "/financial/hoursapproval/", {}, function (request) {
+            let data = request.data.modifier;
+            let v = '<tr>\n' +
+                '<th style="text-align:center; width: 2%">编号</th>\n' +
+                '<th style="text-align:center; width: 3%">姓名</th>\n' +
+                '<th style="text-align:center; width: 5%">修改日期</th>\n' +
+                '<th style="text-align:center; width: 5%">上次修改日期</th>\n' +
+                '<th style="text-align:center; width: 5%">修改人</th>\n' +
+                '<th style="text-align:center; width: 5%">修改字段</th>\n' +
+                '<th style="text-align:center; width: 5%">初始值</th>\n' +
+                '<th style="text-align:center; width: 5%">修改值</th>\n' +
+                '<th style="text-align:center; width: 8%">备注</th>\n' +
+                '<th style="text-align:center; width: 8%">处理人</th>\n' +
+                '<th style="text-align:center; width: 8%">操作</th>\n' +
+                '</tr>';
+            $("#modifiylist").html(v);
+            if (data.length == 0) {
+                $("#modifiylist").append('<tr><td colspan="9">暂无内容</td></tr>')
+            }
+            for (let i = 0; i < data.length; i++) {
+                v = '<tr>\n' +
+                    '<td>' + data[i].record_id + '</td>\n' +
+                    '<td>' + data[i].worker_name + '</td>\n' +
+                    '<td>' + data[i].change_date + '</td>\n' +
+                    '<td>' + data[i].data_date + '</td>\n' +
+                    '<td>' + data[i].manager + '</td>\n' +
+                    '<td>' + data[i].column + '</td>\n' +
+                    '<td>' + data[i].original_data + '</td>\n' +
+                    '<td>' + data[i].change_data + '</td>\n' +
+                    '<td>' + data[i].note + '</td>\n' +
+                    '<td>' + data[i].approver + '</td>\n';
+                if (data[i].status == 0) {
+                    v += '<td><a href="javascript:;" record_id="' + data[i].record_id + '" class="agree">同意</a>/' +
+                        '<a href="javascript:;" record_id="' + data[i].record_id + '" class="disagree">不同意</a></td>\n' +
+                        '</tr>';
+                } else if (data[i].status == 1) {
+                    v += '<td>已同意申请</td></tr>';
+                } else if (data[i].status == 2) {
+                    v += '<td>申请被拒绝</td></tr>';
+                }
+                $("#modifiylist").append(v);
+            }
+            $(".agree").click(function () {
+                $("#capplybtn").click();
+                $("#capplySubmit").attr("record_id", $(this).attr("record_id")).attr("type", "agree")
+            });
+            $(".disagree").click(function () {
+                $("#capplybtn").click();
+                $("#capplySubmit").attr("record_id", $(this).attr("record_id")).attr("type", "disagree")
+            });
+            // 提交按钮
+            $("#capplySubmit").click(function () {
+                $.post(orig + "/financial/hoursapproval/", {
+                    recode_id: $(this).attr("record_id"),
+                    type: $(this).attr("type"),
+                    note: $("#applynote").val(),
+                }, function (result) {
+                    if (result.msg == "操作成功")
+                        toastr.success(request.msg);
+                    else toastr.error(request.msg);
+                    getData();
+                    $("#capplybtn").click();
+                });
+                return false;
+            })
+        })
+    };
+    getData();
+</script>

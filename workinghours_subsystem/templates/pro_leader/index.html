@@ -7,24 +7,74 @@
 {% endblock %}
 {% block components %}
     <li>
-        <a href="#" class="has-dropdown"><i
+        <a href="#" class="leadera"><i
                 class="ion ion-ios-book-outline"></i><span>我的项目</span></a>
         <ul class="menu-dropdown">
         </ul>
     </li>
     <li>
-        <a href="#" class="has-dropdown"><i class="ion ion-edit"></i><span>员工管理</span></a>
+        <a href="#" class="leadera"><i class="ion ion-edit"></i><span>员工管理</span></a>
         <ul class="menu-dropdown">
         </ul>
     </li>
     <li>
-        <a href="#" class="has-dropdown"><i class="ion ion-flag"></i><span>考勤管理</span></a>
+        <a href="#" class=" leadera"><i class="ion ion-flag"></i><span>考勤管理</span></a>
         <ul class="menu-dropdown">
         </ul>
     </li>
     <li>
-        <a href="" class="has-dropdown"><i class="ion ion-ios-albums-outline"></i>考勤修改记录<span></span></a>
+        <a href="#" class=" leadera"><i class="ion ion-clock"></i><span>考勤历史</span></a>
         <ul class="menu-dropdown">
         </ul>
     </li>
+    <li>
+        <a href="#" class=" leadera"><i class="ion ion-ios-book"></i><span>审批信息</span></a>
+        <ul class="menu-dropdown">
+        </ul>
+    </li>
+    <li>
+        <a href="" class=" leadera"><i class="ion ion-ios-albums-outline"></i>考勤修改记录<span></span></a>
+        <ul class="menu-dropdown">
+        </ul>
+    </li>
+
+
+{% endblock %}
+{% block shiJS %}
+    <script>
+        $(".leadera").click(function () {
+            if ($(this).index(".leadera") == 0) {
+                $.post(orig + "/leader/projects/", {}, function (result) {
+                    $(".main-content").eq(0).html(result);
+                    $('html,body').animate({scrollTop: 0}, 300);
+                });
+            } else if ($(this).index(".leadera") == 1) {
+                $.post(orig + "/leader/staffmanage/", {}, function (result) {
+                    $(".main-content").eq(0).html(result);
+                    $('html,body').animate({scrollTop: 0}, 300);
+                });
+            } else if ($(this).index(".leadera") == 2) {
+                $.post(orig + "/leader/attendance/", {}, function (result) {
+                    $(".main-content").eq(0).html(result);
+                    $('html,body').animate({scrollTop: 0}, 300);
+                });
+            } else if ($(this).index(".leadera") == 3) {
+                $.post(orig + "/leader/timerecord/", {}, function (result) {
+                    $(".main-content").eq(0).html(result);
+                    $('html,body').animate({scrollTop: 0}, 300);
+                });
+            } else if ($(this).index(".leadera") == 4) {
+                $.post(orig + "/leader/approve/", {}, function (result) {
+                    $(".main-content").eq(0).html(result)
+                });
+            } else if ($(this).index(".leadera") == 5) {
+                $.post(orig + "/leader/attendancerecode/", {}, function (result) {
+                    $(".main-content").eq(0).html(result)
+                });
+            }
+            $(this).parent("li").siblings("li").removeClass("active");
+            $(this).parent("li").addClass("active");
+            return false;
+        })
+    </script>
 {% endblock %}

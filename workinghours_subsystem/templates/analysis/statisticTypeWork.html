@@ -1,0 +1,74 @@
+<div id="data-cont1">
+
+</div>
+
+<script type="text/javascript">
+    $.get(orig + "/financial/statisticTypeWork/", {}, function (result) {
+        let worker_type = result.data.worker_type;
+        let data = result.data.data;
+        let pro_name = result.data.project_name;
+        for (let i = 0; i < pro_name.length; i++) {
+            $("#data-cont1").append('<div class="datacontaint1" style="width: 380px;height:400px;float: left;"></div>')
+        }
+        for (var i = 0; i < pro_name.length; i++) {
+            var dom = document.getElementsByClassName("datacontaint1");
+            var myChart = echarts.init(dom[i]);
+            option = null;
+            option = {
+                color: ['#3398DB'],
+                title: {
+                    text: pro_name[i]
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                        type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: worker_type,
+                        axisTick: {
+                            alignWithLabel: true
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: '',
+                        type: 'bar',
+                        barWidth: '80%',
+                        data: [data[0][i], data[1][i], data[2][i], data[3][i], data[4][i], data[5][i]],
+                        itemStyle: {
+                            normal: {
+                                label: {
+                                    show: true, //开启显示
+                                    position: 'top', //在上方显示
+                                    textStyle: { //数值样式
+                                        color: 'black',
+                                        fontSize: 10
+                                    }
+                                }
+                            }
+                        },
+                    }
+                ]
+            };
+            if (option && typeof option === "object") {
+                myChart.setOption(option, true);
+            }
+        }
+    });
+</script>
