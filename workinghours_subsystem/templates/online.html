@@ -1,14 +1,89 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>online</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <style>
+        .tab-css {
+            text-align: center;
+        }
+
+        .tab-css tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .tab-css tr:nth-child(odd) {
+            background-color: rgba(0, 0, 0, .02)
+        }
+
+        .tab-hover tr:hover {
+            background-color: #fefefe;
+        }
+
+        .onlinediv {
+            width: 50%;
+            float: left;
+        }
+    </style>
 </head>
 <body>
-当前正在浏览
-当前正在使用
+<div class="onlinediv">
+    <h4>当前正在浏览</h4>
+    <table class="table tab-css tab-hover seelist">
+        <tr>
+            <th>姓名</th>
+            <th>联系方式</th>
+            <th>操作</th>
+        </tr>
+
+    </table>
+</div>
+<div class="onlinediv">
+    <h4>当前正在使用</h4>
+    <table class="table tab-css tab-hover openlist">
+        <tr>
+            <th>姓名</th>
+            <th>联系方式</th>
+            <th>操作</th>
+        </tr>
+
+    </table>
+</div>
 </body>
 </html>
+<script src="{% static 'js/jquery.min.js' %}"></script>
 <script>
+    var orig = window.location.origin;
+
+    var func1 = function () {
+        $.post(orig + "/getonline/", {}, function (result) {
+            let openlist = result.data.open_list;
+            let seelist = result.data.see_list;
+            for (let i = 0; i < seelist.length; i++) {
+                let v = '<tr><td>' + seelist[i].username + '</td><td>' + seelist[i].tel + '</td><td><a href="javascript:;" class="onlinea" tel="' + seelist[i].tel + '">发送消息</a></td></tr>'
+                $(".seelist").eq(0).append(v);
+            }
+            for (let i = 0; i < openlist.length; i++) {
+                let v = '<tr><td>' + openlist[i].username + '</td><td>' + openlist[i].tel + '</td><td><a href="javascript:;" class="onlinea2" tel="' + openlist[i].tel + '">发送消息</a></td></tr>';
+                $(".openlist").eq(0).append(v);
+            }
+            $(".onlinea").click(function () {
+                var msg = prompt("输入内容1：");
+                $.post(orig + "/sendmsg/", {"uuid": $(this).attr("tel"), "msg": msg}, function (request) {
+
+                })
+            });
+            $(".onlinea2").click(function () {
+                var msg = prompt("输入内容2：");
+                $.get(orig + "/sendmsg/", {"uuid": $(this).attr("tel"), "msg": msg}, function (request) {
+
+                })
+            });
+            console.log(result.data)
+        })
+    };
+    func1();
 
 </script>

@@ -1,4 +1,6 @@
 import datetime
+import threading
+import time
 
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render_to_response, redirect
@@ -78,7 +80,8 @@ def profile(request):
                         obj = Staff.objects.get(telephone=user.telephone)
                         obj.password = password
                         obj.save()
-                        return JsonResponse(data={'msg': '修改成功。','department_id':user.department_id}, json_dumps_params={'ensure_ascii': False})
+                        return JsonResponse(data={'msg': '修改成功。', 'department_id': user.department_id},
+                                            json_dumps_params={'ensure_ascii': False})
                     else:
                         return JsonResponse(data={'msg': '设置的两次新密码不一致。'}, json_dumps_params={'ensure_ascii': False})
             else:
@@ -86,28 +89,75 @@ def profile(request):
         else:
             return JsonResponse(data={'msg': '内容不能为空。'}, json_dumps_params={'ensure_ascii': False})
 
-open_list = []
-see_list = []
+
+
+
+
+open_list = {}
+see_list = {}
+def checktime():
+    while True:
+        nowtime = time.time()
+        for index in list(open_list.keys()):
+            open_list[index]["msg"] = ""
+            if nowtime - open_list[index]['time'] > 10:
+                open_list.pop(index)
+        for index in list(see_list.keys()):
+            see_list[index]["msg"] = ""
+            if nowtime - see_list[index]['time'] > 10:
+                see_list.pop(index)
+
+        time.sleep(10)
+timer = threading.Thread(target=checktime)
+timer.start()
+
+
 def sendonline(request):
     uuid = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))
     user = Staff.objects.get(telephone=uuid)
     if not user:
         return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
-    nowtime = datetime.datetime.now()
+    nowtime = time.time()
     if request.method == "GET":
         imline = request.GET.get("online_type")
         if imline == "open":
-            open_list.append(user)
-            print(user.username,"正在打开系统")
+            if uuid not in open_list.keys():
+                if uuid not in see_list.keys():
+                    open_list[uuid] = {"tel": uuid, "username": user.username, "time": nowtime, "msg": ""}
+            else:
+                open_list[uuid]['time'] = nowtime
+                return JsonResponse(data={"code": 1, "msg": "success","data": {"msg":open_list[uuid]["msg"]}}, json_dumps_params={'ensure_ascii': False})
+            return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
         elif imline == "see":
-            see_list.append(user)
-            print(user.username, "正在浏览系统页面")
-        return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
+            if uuid not in see_list.keys():
+                see_list[uuid] = {"tel":uuid,"username": user.username, "time": nowtime, "msg": ""}
+            else:
+                see_list[uuid]['time'] = nowtime
+                return JsonResponse(data={"code": 1, "msg": "success", "data": {"msg":see_list[uuid]["msg"]}},
+                                json_dumps_params={'ensure_ascii': False})
+            return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
+
     elif request.method == "POST":
         return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
 
 
-def getonline(request):
+def sendmsg(request):
+    if request.method == "GET":
+        uuid = request.GET.get('uuid')
+        msg = request.GET.get("msg")
+        open_list[uuid]['msg'] = msg
+        return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
+    elif request.method == "POST":
+        uuid = request.POST.get('uuid')
+        msg = request.POST.get("msg")
+        see_list[uuid]['msg'] = msg
+        return JsonResponse(data={"code": 1, "msg": "success"}, json_dumps_params={'ensure_ascii': False})
 
+def getonline(request):
     if request.method == "GET":
         return render_to_response('online.html')
+    elif request.method == "POST":
+        oplist = [value for value in open_list.values()]
+        seelist = [value for value in see_list.values()]
+
+        return JsonResponse(data={"code": 1, "msg": "success","data":{"open_list":oplist,"see_list":seelist}}, json_dumps_params={'ensure_ascii': False})

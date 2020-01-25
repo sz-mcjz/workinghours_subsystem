@@ -355,32 +355,38 @@
     }
 </script>
 <script>
+
     //正在使用 发送请求
     var online = setInterval(function () {
         $.get(orig+"/sendonline/",{'online_type':'open'},function (request) {
-
+            let msg = request.data.msg;
+            if(msg !="" && msg!=null){
+                toastr.info(msg);
+            }
         });
-        console.log("正在使用");
-    }, 3000);
+    }, 6000);
     //正在浏览 发送请求
     var interval_output = null;
 
     function send_online() {
         $.get(orig+"/sendonline/",{'online_type':'see'},function (request) {
-
+            console.log(request);
+            let msg = request.data.msg;
+            if(msg !="" && msg!=null){
+                toastr.info(msg);
+            }
         });
-        console.log("正在浏览");
     }
     // window 失去焦点，停止输出
-    window.onblur = function () {
+    $(window).blur(function () {
         clearInterval(interval_output);
-    };
+    });
     // window 每次获得焦点
-    window.onfocus = function () {
+    $(window).focus(function () {
         interval_output = setInterval(function () {
             send_online();
         }, 3000);
-    };
+    });
     interval_output = setInterval(function () {
         send_online();
     }, 3000);

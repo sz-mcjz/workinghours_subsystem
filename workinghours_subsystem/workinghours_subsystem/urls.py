@@ -13,6 +13,10 @@ urlpatterns = [
     path('profile/', db_api.profile, name='profile'),
     # send online
     path('sendonline/', db_api.sendonline, name='sendonline'),
+    # get online
+    path('getonline/', db_api.getonline, name='getonline'),
+    # send msg
+    path('sendmsg/', db_api.sendmsg, name='sendmsg'),
     # boss api 子路由
     path('boss/', include('boss.urls')),
     # leader api 子路由
