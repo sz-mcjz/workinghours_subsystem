@@ -86,8 +86,54 @@
     </section>
 </div>
 
-<script>
 
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/popper.js' %}"></script>
+<script src="{% static 'js/tooltip.js' %}"></script>
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'nicescroll/jquery.nicescroll.min.js' %}"></script>
+{#<script src="{% static '' %}../dist/modules/moment.min.js"></script>#}
+{#<script src="{% static 'scroll-up-bar/dist/scroll-up-bar.min.js' %}"></script>#}
+<script src="{% static 'js/sa-functions.js' %}"></script>
+<script src="{% static 'js/scripts.js' %}"></script>
+<script src="{% static 'js/custom.js' %}"></script>
+{#<script src="{% static 'js/demo.js' %}"></script>#}
+<script>
+    var orig = window.location.origin;
+    $("body").append('<div class="demo-settings"><div class="demo-settings-toggle"><i class="ion ion-gear-a"></i></div><div class="demo-settings-options"><ul><li class="demo-toggle-skin" style="background-color: #574B90;" title="Default"></li><li class="demo-toggle-skin" style="background-color: #3F52E3;" title="Blue"></li><li class="demo-toggle-skin" style="background-color: #39065A;" title="Deep Purple"></li><li class="demo-toggle-skin" style="background-color: #3DC7BE;" title="Light Blue"></li><li class="demo-toggle-skin" style="background-color: #212330;" title="Dark Sidebar"></li></ul></div></div>');
+
+    var skin = function (color) {
+        $("#skin-css").remove();
+        if (color == 'default') return;
+        $("head").append($("<link/>", {
+            rel: 'stylesheet',
+            href: '{% static 'css/skins' %}' + '/' + color + '.css',
+            id: 'skin-css'
+        }));
+    };
+
+    $(".demo-settings-toggle").on("click", function () {
+        if ($(".demo-settings")[0].classList.contains("active")) {
+            $(".demo-settings")[0].classList.remove('active');
+        } else {
+            $(".demo-settings")[0].classList += ' active';
+        }
+    });
+
+    if (localStorage.getItem("skin")) {
+        skin(localStorage.getItem("skin").replace(/ /g, ''));
+    }
+
+    $(".demo-toggle-skin").each(function (i) {
+        let me = $(this);
+        me.on("click", function (e) {
+            let _this = e.target;
+            localStorage.removeItem("skin");
+            localStorage.setItem("skin", _this.attributes.title.nodeValue.toLowerCase());
+            skin(_this.attributes.title.nodeValue.toLowerCase().replace(/ /g, ''));
+        });
+    });
     $("#password").focus(function () {
         $("#tishi").hide()
     });
@@ -97,18 +143,5 @@
         $("#tishi").hide()
     })
 </script>
-
-<script src="{% static 'js/jquery.min.js' %}"></script>
-<script src="{% static 'js/popper.js' %}"></script>
-<script src="{% static 'js/tooltip.js' %}"></script>
-<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'nicescroll/jquery.nicescroll.min.js' %}"></script>
-{#<script src="{% static '' %}../dist/modules/moment.min.js"></script>#}
-<script src="{% static 'scroll-up-bar/dist/scroll-up-bar.min.js' %}"></script>
-<script src="{% static 'js/sa-functions.js' %}"></script>
-<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script src="{% static 'js/scripts.js' %}"></script>
-<script src="{% static 'js/custom.js' %}"></script>
-<script src="{% static 'js/demo.js' %}"></script>
 </body>
 </html>

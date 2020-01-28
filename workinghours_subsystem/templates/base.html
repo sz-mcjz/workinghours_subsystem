@@ -68,11 +68,7 @@
 
     </style>
 
-    <script type="text/javascript" src="http://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
     <script src="{% static 'js/echarts.min.js' %}"></script>
-    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </head>
 
 <body>
@@ -88,8 +84,9 @@
                             class="ion ion-search"></i></a></li>
                 </ul>
                 <div class="search-element">
-                    <input class="form-control" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn" type="submit"><i class="ion ion-search"></i></button>
+                    <input class="form-control" type="search" placeholder="Search" id="search-input"
+                           aria-label="Search">
+                    <button class="btn" type="submit" id="search-submit"><i class="ion ion-search"></i></button>
                 </div>
             </form>
             <ul class="navbar-nav navbar-right">
@@ -233,11 +230,9 @@
         </form>
     </div>
 </div>
-
+<script src="{% static 'js/jquery.min.js' %}"></script>
 <script src="{% static 'js/chart.min.js' %}"></script>
 <script src="{% static 'summernote/summernote-lite.js' %}"></script>
-
-<script src="{% static 'js/jquery.min.js' %}"></script>
 <script src="{% static 'js/popper.js' %}"></script>
 <script src="{% static 'js/tooltip.js' %}"></script>
 <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
@@ -356,40 +351,79 @@
 </script>
 <script>
 
-    //正在使用 发送请求
-    var online = setInterval(function () {
-        $.get(orig+"/sendonline/",{'online_type':'open'},function (request) {
-            let msg = request.data.msg;
-            if(msg !="" && msg!=null){
-                toastr.info(msg);
-            }
-        });
-    }, 6000);
-    //正在浏览 发送请求
-    var interval_output = null;
+        //正在使用 发送请求
+        var online = setInterval(function () {
+            $.get(orig+"/sendonline/",{'online_type':'open'},function (request) {
+                //let msg = request.data.msg;
+                //if(msg !="" && msg!=null){
+                //    toastr.info(msg);
+                //}
+            });
+        }, 6000);
+        //正在浏览 发送请求
+        var interval_output = null;
 
-    function send_online() {
-        $.get(orig+"/sendonline/",{'online_type':'see'},function (request) {
-            console.log(request);
-            let msg = request.data.msg;
-            if(msg !="" && msg!=null){
-                toastr.info(msg);
-            }
+        function send_online() {
+            $.get(orig+"/sendonline/",{'online_type':'see'},function (request) {
+                let msg = request.data.msg;
+                if(msg !="" && msg!=null){
+                    toastr.info(msg);
+                }
+            });
+        }
+        // window 失去焦点，停止输出
+        $(window).blur(function () {
+            clearInterval(interval_output);
         });
-    }
-    // window 失去焦点，停止输出
-    $(window).blur(function () {
-        clearInterval(interval_output);
-    });
-    // window 每次获得焦点
-    $(window).focus(function () {
+        // window 每次获得焦点
+        $(window).focus(function () {
+            interval_output = setInterval(function () {
+                send_online();
+            }, 3000);
+        });
         interval_output = setInterval(function () {
             send_online();
         }, 3000);
-    });
-    interval_output = setInterval(function () {
-        send_online();
-    }, 3000);
+
+
+</script>
+
+<script>
+    var chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/');
+
+    chatSocket.onmessage = function (e) {
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+        toastr.info(message);
+    };
+
+    chatSocket.onclose = function (e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+/*
+    document.querySelector('#search-submit').focus();
+    document.querySelector('#search-submit').onkeyup = function (e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#search-submit').click();
+        }
+        return false;
+    };
+
+    document.querySelector('#search-submit').onclick = function (e) {
+        var messageInputDom = document.querySelector('#search-input');
+        var message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'type': 'admin',
+            'sendto': '18159270667',
+            'message': message
+        }));
+
+        messageInputDom.value = '';
+        return false;
+    };
+
+ */
 </script>
 {% block shiJS %}
 {% endblock %}

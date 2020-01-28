@@ -56,7 +56,8 @@
 <script src="{% static 'js/jquery.min.js' %}"></script>
 <script>
     var orig = window.location.origin;
-
+    var chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/');
     var func1 = function () {
         $.post(orig + "/getonline/", {}, function (result) {
             let openlist = result.data.open_list;
@@ -71,17 +72,23 @@
             }
             $(".onlinea").click(function () {
                 var msg = prompt("输入内容1：");
-                $.post(orig + "/sendmsg/", {"uuid": $(this).attr("tel"), "msg": msg}, function (request) {
-
-                })
+                console.log($(this).attr("tel"))
+                chatSocket.send(JSON.stringify({
+                    'type': 'admin',
+                    'sendto': $(this).attr("tel"),
+                    'message': msg
+                }));
             });
             $(".onlinea2").click(function () {
                 var msg = prompt("输入内容2：");
-                $.get(orig + "/sendmsg/", {"uuid": $(this).attr("tel"), "msg": msg}, function (request) {
-
-                })
+                console.log($(this).attr("tel"))
+                chatSocket.send(JSON.stringify({
+                    'type': 'admin',
+                    'sendto': $(this).attr("tel"),
+                    'message': msg
+                }));
             });
-            console.log(result.data)
+
         })
     };
     func1();

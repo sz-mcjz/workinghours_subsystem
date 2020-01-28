@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'channels',
     'db',
     'boss',
     'pro_leader',
@@ -71,7 +72,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'workinghours_subsystem.wsgi.application'
-
+# 指定ASGI的路由地址
+ASGI_APPLICATION = 'workinghours_subsystem.routing.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
