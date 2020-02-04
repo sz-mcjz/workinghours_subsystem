@@ -1,3 +1,4 @@
+<!--考勤管理-->
 <style>
     .newinput {
         height: 25px;
@@ -31,7 +32,7 @@
             <div class="modal-content">
                 <h4 style="padding-top: 15px;padding-left: 15px">友情提示</h4>
                 <div class="modal-body">
-                    <h6>员工工时每日只能填写一次，请仔细检查谨慎填写。</h6>
+                    <h6>员工工时每日只能填写一次，请仔细检查谨慎填写！<br>当前录入工时为今天（<span style="color: red">{{ nowtime }}</span>）的工日。</h6>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-target="#Remind" id="Remind"
@@ -54,9 +55,6 @@
         $("#projectselect").html(v);
     });
 
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    });
 
     function onlyNumber(obj) {
         var t = obj.value.charAt(0);
@@ -89,30 +87,41 @@
                 '        <th style="text-align:center; width: 6%">备注</th>\n' +
                 '    </tr>';
             $("#attendManage").html(v);
-            if (data.length==0){
+            if (data.length == 0) {
                 $("#attendManage").append('<tr><td colspan="10">今日已经提交</td></tr>')
             }
             for (let i = 0; i < data.length; i++) {
                 v = '<tr class="workertr">\n' +
-                    '        <td pro_id="'+data[i].project_name_id +'">' + data[i].worker_id + '</td>\n' +
+                    '        <td pro_id="' + data[i].project_name_id + '">' + data[i].worker_id + '</td>\n' +
                     '        <td>' + data[i].worker + '</td>\n' +
                     '        <td>' + data[i].id_number + '</td>\n' +
                     '        <td>' + data[i].worker_type + '</td>\n' +
-                    '        <td><input workerid="'+ data[i].worker_id +'" class="form-control newinput " oninput="value=onlyNumber(this)" data-toggle="tooltip" required\n' +
-                    '                   data-placement="bottom" title="输入只能是数字或小数" type="text"></td>\n' +
-                    '        <td><input class="form-control newinput" oninput="value=onlyNumber(this)" data-toggle="tooltip" required\n' +
-                    '                   data-placement="bottom" title="输入只能是数字或小数" type="text" type="text"></td>\n' +
-                    '        <td class="zonggongshi"></td>\n' +
+                    '        <td><input workerid="' + data[i].worker_id + '" class="form-control newinput fjbgr" oninput="value=onlyNumber(this)" data-toggle="tooltip" required\n' +
+                    '                   data-placement="bottom" title="输入只能是数字或小数" type="text" value="0" ></td>\n' +
+                    '        <td><input class="form-control newinput jbgr" oninput="value=onlyNumber(this)" data-toggle="tooltip" required\n' +
+                    '                   data-placement="bottom" title="输入只能是数字或小数" type="text" type="text" value="0"></td>\n' +
+                    '        <td class="zonggongshi">0</td>\n' +
                     '        <td>' + data[i].entry_data + '</td>\n' +
                     '        <td>' + data[i].leave_data + '</td>\n' +
                     '        <td><input class="form-control newinput " data-toggle="tooltip" type="text"></input></td>\n' +
                     '    </tr>';
                 $("#attendManage").append(v);
             }
+            $(".fjbgr").change(function(){
+                let zgs = parseFloat($(this).val()) + parseFloat($(this).parents('td').next().children('input').val());
+                $(this).parent().siblings('.zonggongshi').eq(0).html(zgs);
+            });
+            $(".jbgr").change(function(){
+                let zgs = parseFloat($(this).val()) + parseFloat($(this).parents('td').prev().children('input').val());
+                $(this).parent().siblings('.zonggongshi').eq(0).html(zgs);
+            });
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            });
         })
     };
 
-     $("#workhoursubmit2").click(function () {
+    $("#workhoursubmit2").click(function () {
         let tr = $(".workertr");
         var attend_data = [];
         var pro_id = $("#projectselect").val();
@@ -122,20 +131,27 @@
             let normal = tr.eq(i).children("td").children('input').eq(0).val();
             let extra = tr.eq(i).children("td").children('input').eq(1).val();
             let note = tr.eq(i).children("td").children('input').eq(2).val();
-            if(workerid=="" || normal=="" || extra==""){
-                tr.eq(i).css("border","1px red solid");
+            if (workerid == "" || normal == "" || extra == "") {
+                tr.eq(i).css("border", "1px red solid");
                 return false;
             }
-            attend_data.push({"id":workerid, "normal":normal, "extra":extra,"note":note});
+            attend_data.push({"id": workerid, "normal": normal, "extra": extra, "note": note});
         }
-        $.post(orig + "/leader/attend/worker/",{"attendance_data":JSON.stringify(attend_data),"pro_id":pro_id},function (result) {
-            console.log(result);
-            getw(result.data);
-            if(result.msg == "录入列表为空"){
+        $.post(orig + "/leader/attend/worker/", {
+            "attendance_data": JSON.stringify(attend_data),
+            "pro_id": pro_id
+        }, function (result) {
+
+
+            if (result.msg == "录入列表为空") {
                 toastr.error(result.msg);
             }
-            else{
+            if (result.code == 0) {
+                toastr.error(result.msg);
+            }
+            else if(result.code == 1) {
                 toastr.success("提交成功！");
+                getw(result.data.pro_id);
             }
             $("#Remind").click();
         });

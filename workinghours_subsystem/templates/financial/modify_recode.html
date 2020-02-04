@@ -8,7 +8,6 @@
 
     var getData = function () {
         $.get(orig + "/financial/hoursrecode/", {}, function (request) {
-            console.log(request)
             let data = request.data.modifier;
             let v = '<tr>\n' +
                 '<th style="text-align:center; width: 2%">编号</th>\n' +

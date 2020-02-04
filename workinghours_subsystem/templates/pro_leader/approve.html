@@ -1,4 +1,4 @@
-
+<!--审批信息-->
 <table class="table tab-css tab-hover" style="vertical-align:middle; text-align: center" id="approvelist">
 
 
@@ -9,7 +9,6 @@
     var getw = function getworker() {
         $.get(orig + "/leader/approve/info/", {}, function (request) {
             let data = request.data.info;
-            console.log(data)
             let v = '<tr>\n' +
                 '            <th style="text-align:center; width: 2%">编号</th>\n' +
                 '            <th style="text-align:center; width: 3%">姓名</th>\n' +

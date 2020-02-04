@@ -18,7 +18,7 @@
     $.get(orig + "/financial/data/projectinfo/", {}, function (request) {
         // 先获取项目列表
         let pros = request.data.mine_pro;
-        $.get(orig + "/financial/statisticSingle/", {"pro_id":pros[0].project_id }, function (result) {
+        $.get(orig + "/financial/statisticSingle/", {"pro_id": pros[0].project_id}, function (result) {
             let data = result.data;
             echars1(data);
             echars2(data);
@@ -79,7 +79,19 @@
                     name: '',
                     type: 'bar',
                     barWidth: '80%',
-                    data: data.data0
+                    data: data.data0,
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                show: true, //开启显示
+                                position: 'top', //在上方显示
+                                textStyle: { //数值样式
+                                    color: 'black',
+                                    fontSize: 10
+                                }
+                            }
+                        }
+                    },
                 }
             ]
         };
@@ -212,19 +224,55 @@
                         type: 'bar',
                         barGap: 0,
                         label: labelOption,
-                        data: data.data[i].total
+                        data: data.data[i].total,
+                        itemStyle: {
+                            normal: {
+                                label: {
+                                    show: true, //开启显示
+                                    position: 'top', //在上方显示
+                                    textStyle: { //数值样式
+                                        color: 'black',
+                                        fontSize: 10
+                                    }
+                                }
+                            }
+                        },
                     },
                     {
                         name: data.dataname[i][1],//'加班',
                         type: 'bar',
                         label: labelOption,
-                        data: data.data[i].normal
+                        data: data.data[i].normal,
+                        itemStyle: {
+							normal: {
+								label: {
+									show: true, //开启显示
+									position: 'top', //在上方显示
+									textStyle: { //数值样式
+										color: 'black',
+										fontSize: 10
+									}
+								}
+							}
+						},
                     },
                     {
                         name: data.dataname[i][2],//'非加班',
                         type: 'bar',
                         label: labelOption,
-                        data: data.data[i].over
+                        data: data.data[i].over,
+                        itemStyle: {
+							normal: {
+								label: {
+									show: true, //开启显示
+									position: 'top', //在上方显示
+									textStyle: { //数值样式
+										color: 'black',
+										fontSize: 10
+									}
+								}
+							}
+						},
                     }
                 ]
             };

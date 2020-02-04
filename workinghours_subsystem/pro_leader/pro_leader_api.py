@@ -170,10 +170,9 @@ def pro_leader_notinput(request):
     if request.method == "GET":
         pro_id = request.GET.get('pro_id')
         now_time = datetime.datetime.now()
-        # 取时间小于今天的 项目名字为 XXX 的 工人id
-        previnfo = list([i['worker_info_id_id'] for i in WorkerHours.objects.filter(write_data__lte=now_time,
-                                                                                    pname=Project.objects.get(
-                                                                                        project_id=pro_id).project_name).values(
+        # 取时间等于今天的 项目名字为 XXX 的 工人id，因为明天他也要可以填写
+        previnfo = list([i['worker_info_id_id'] for i in WorkerHours.objects.filter(pname=Project.objects.get(
+            project_id=pro_id).project_name, write_data=now_time,salary=0).values(
             "worker_info_id_id")])
 
         page = int(request.GET.get('page', 1))
@@ -220,7 +219,7 @@ def pro_leader_attend(request):
         attend_data = request.POST.get('attendance_data')
         pro_id = request.POST.get('pro_id')
         attend_data = json.loads(attend_data)
-
+        print(attend_data)
         if len(attend_data) == 0:
             return JsonResponse({'code': 0, 'msg': '录入列表为空', "data": pro_id}, json_dumps_params={'ensure_ascii': False})
 
@@ -228,7 +227,7 @@ def pro_leader_attend(request):
         for v in attend_data:
             try:
                 workerhours = WorkerHours()
-                workerhours.worker_info_id = WorkerInfo.objects.get(worker_id=v['id'])
+                workerhours.worker_info_id_id = v['id']
                 workerhours.write_data = datetime.datetime.now()
                 workerhours.writer = leader.username
                 workerhours.pname = Project.objects.get(project_id=pro_id).project_name
@@ -240,10 +239,12 @@ def pro_leader_attend(request):
                     WorkerInfo.objects.get(worker_id=v['id']).das_salary)
                 workerhours.salary = 0
                 workerhours.note = v['note']
+                workerhours.project_id_id = pro_id
                 workerhours.save()
             except:
-                return JsonResponse({'code': 0, 'msg': '考勤数据录入失败'}, json_dumps_params={'ensure_ascii': False})
-        return JsonResponse({'code': 1, 'msg': '考勤数据录入成功'}, json_dumps_params={'ensure_ascii': False})
+                return JsonResponse({'code': 0, 'msg': '有部分考勤数据录入失败'}, json_dumps_params={'ensure_ascii': False})
+        return JsonResponse({'code': 1, 'msg': '考勤数据录入成功','data':{'pro_id':pro_id}}, json_dumps_params={'ensure_ascii': False})
+
 
 # 考勤历史数据  显示页面为 timerecord/
 def pro_leader_workhours(request):
@@ -257,7 +258,7 @@ def pro_leader_workhours(request):
         if not date:
             date = lastdate['write_data']
 
-        hourinfo = WorkerHours.objects.filter(write_data=date,writer=user.username)
+        hourinfo = WorkerHours.objects.filter(write_data=date, writer=user.username)
 
         hourinfo2 = []
         for v in hourinfo:
@@ -304,7 +305,6 @@ def pro_leader_project(request):
 
         workers = list(WorkerInfo.objects.filter(project_name_id=project_id).values())
 
-
         for i, w in enumerate(workers):
             w['work_type'] = WorkerType.objects.get(worker_type_id=w['work_type_id']).type_name
             if w['status'] == 1:
@@ -338,6 +338,7 @@ def pro_leader_project(request):
         }
         return JsonResponse(data=data, json_dumps_params={'ensure_ascii': False})
 
+
 # 审批信息
 def pro_leader_approve(request):
     uuid = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))
@@ -360,6 +361,7 @@ def pro_leader_approve(request):
         if dic['status'] == 2:
             dic['status'] = '未通过'
         info2.append(dic)
+    info2 = sorted(info2,key=lambda x:x['status'],reverse=True)
     data = {
         'code': 1,
         'msg': '请求成功',
@@ -385,6 +387,7 @@ def pro_leader_modifier(request):
     }
     return JsonResponse(data=data, json_dumps_params={'ensure_ascii': False})
 
+
 # 工时信息申请修改
 def pro_leader_workhoursapplymodify(request):
     uuid = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))
@@ -401,36 +404,35 @@ def pro_leader_workhoursapplymodify(request):
         nomal = request.POST.get("nomal")
         overtime = request.POST.get("overtime")
         note = request.POST.get("note")
-        print(worker_id,work_hour_id,nomal,overtime,note)
+
         # 查询原来的记录
         wh = WorkerHours.objects.get(working_hours_id=work_hour_id)
         # 审批记录表新建数据
-
-        if not (wh.work_day == nomal):
+        if not (wh.work_day == float(nomal)):
             try:
                 ar = ApproveRecode()
                 ar.worker_info_id_id = worker_id
                 ar.submit_date = datetime.datetime.now()  # 申请时间为今天
-                ar.column = "非加班工时"  # work_day 是非加班工时
+                ar.column = "非加班工日"  # work_day 是非加班工时
                 ar.manager = user.username
-                ar.original_data = wh.work_day # 原始数据为刚刚查出来的数据
+                ar.original_data = wh.work_day  # 原始数据为刚刚查出来的数据
                 ar.change_data = nomal  # 新数据为刚刚获取的
                 ar.note = note
-                ar.status = 0 # 默认为还未审批
+                ar.status = 0  # 默认为还未审批
                 ar.approver = ""  # 默认同意申请的人为空
                 ar.approver_note = ""  # 默认评语为空
-                ar.worker_info_id_id = worker_id   # 所修改的人的id为穿传进来的id
+                ar.worker_info_id_id = worker_id  # 所修改的人的id为穿传进来的id
                 ar.data_date = datetime.datetime.now()
                 ar.working_hours_id = wh.working_hours_id  # 记录的id
                 ar.save()
             except:
                 return JsonResponse(data={"code": 0, "msg": "申请失败"}, json_dumps_params={'ensure_ascii': False})
-        if not (wh.overtime == overtime):
+        if not (wh.overtime == float(overtime)):
             try:
                 ar = ApproveRecode()
                 ar.worker_info_id_id = worker_id
                 ar.submit_date = datetime.datetime.now()  # 申请时间为今天
-                ar.column = "加班工时"  # work_day 是非加班工时
+                ar.column = "加班工日"  # work_day 是非加班工时
                 ar.manager = user.username
                 ar.original_data = wh.overtime  # 原始数据为刚刚查出来的数据
                 ar.change_data = overtime  # 新数据为刚刚获取的
@@ -456,7 +458,8 @@ def staffmanage(request):
 
 
 def attendance(request):
-    return render_to_response("pro_leader/attendance.html")
+    time = datetime.datetime.now().date()
+    return render_to_response("pro_leader/attendance.html", {'nowtime': time})
 
 
 def attendancerecode(request):

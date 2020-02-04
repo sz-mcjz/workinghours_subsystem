@@ -1,4 +1,5 @@
 import datetime
+import json
 from functools import reduce
 
 from django.core.paginator import Paginator
@@ -126,7 +127,33 @@ def financial_data_paysalary(request):
 
     elif request.method == "POST":
         # 工资发放操作
-        pass
+        attend_data = request.POST.get('attendance_data')
+        pro_id = request.POST.get('pro_id')
+        attend_data = json.loads(attend_data)
+        # 录入工资的人
+        finan = Staff.objects.get(telephone=uuid)
+        if len(attend_data) == 0:
+            return JsonResponse({'code': 0, 'msg': '录入列表为空', "data": pro_id}, json_dumps_params={'ensure_ascii': False})
+
+        for v in attend_data:
+            try:
+                workerhours = WorkerHours()
+                workerhours.worker_info_id_id = v['id']
+                workerhours.write_data = datetime.datetime.now()
+                workerhours.writer = finan.username
+                workerhours.pname = Project.objects.get(project_id=pro_id).project_name
+                workerhours.work_day = 0
+                workerhours.overtime = 0
+                workerhours.day_salary = 0
+                workerhours.over_salary = 0
+                workerhours.salary = v['salary']
+                workerhours.note = v['note']
+                workerhours.project_id_id = pro_id
+                workerhours.save()
+            except:
+                return JsonResponse({'code': 0, 'msg': '有部分数据录入失败'}, json_dumps_params={'ensure_ascii': False})
+
+        return JsonResponse(data={"code": 1, "msg": "工资发放录入成功",'data':{'pro_id':pro_id}}, json_dumps_params={'ensure_ascii': False})
 
 
 # 工时审批
@@ -144,7 +171,7 @@ def financial_data_hoursapproval(request):
             dic = v.__dict__
             dic.pop('_state')
             modifier1.append(dic)
-
+        modifier1 = sorted(modifier1,key=lambda x:x['status'])
         data = {
             'code': 1,
             'msg': '请求成功',
@@ -170,9 +197,9 @@ def financial_data_hoursapproval(request):
                 ar.approver = user.username
                 ar.approver_note = note
                 ar.status = 1  # 2是拒绝 0是未审核 1是同意
-                if ar.column == "加班工时":
+                if ar.column == "加班工日":
                     ar.working_hours.overtime = ar.change_data
-                elif ar.column == "非加班工时":
+                elif ar.column == "非加班工日":
                     ar.working_hours.work_day = ar.change_data
                 whc = WorkerHoursChange()
                 whc.change_date = datetime.datetime.now()
@@ -220,6 +247,9 @@ def financial_data_hoursrecode(request):
         return JsonResponse(data=data, json_dumps_params={'ensure_ascii': False})
     elif request.method == "POST":
         return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
+
+
+'''-----------------------------------以下为统计分析模块--------------------------------'''
 
 
 def statisticMonth(request):
@@ -277,21 +307,21 @@ def domonth(result2):
     for i in day_list:
         lis.append({"daynum": i, "data": [0.00, 0.00, 0.00]})
     if result2:
-        for index,i in enumerate(lis):
+        for index, i in enumerate(lis):
             for j in result2:
                 if i['daynum'] == j[0].day:
-                    lis[index] = {'daynum':j[0].day,"data":j[1:]}
+                    lis[index] = {'daynum': j[0].day, "data": j[1:]}
     daylis = []
     z = []
     f = []
     j = []
     for v in lis:
-        daylis.append(str(v["daynum"])+"号")
+        daylis.append(str(v["daynum"]) + "号")
         z.append(v['data'][0])
         f.append(v['data'][1])
         j.append(v['data'][2])
 
-    return {"name":daylis,"total":z,"normal":f,"over":j}
+    return {"name": daylis, "total": z, "normal": f, "over": j}
 
 
 def statisticSingle(request):
@@ -348,10 +378,10 @@ def statisticSingle(request):
             "msg": "查询成功",
             "data": {
                 "pro_name": result1[0].pop(),
-                "name1": ['人数', '总工日', '非加班工日', '加班工日', '总工资', '非加班工资', '加班工资', '已发工资'],
+                "name1": ['项目总人数', '项目总工日', '项目非加班工日', '项目加班工日', '项目总工资', '项目总非加班工资', '项目总加班工资', '项目总已发工资'],
                 "data0": result1[0],
                 "name2": ["工资统计图", "工日统计图"],
-                "dataname": [['总工资', '非加班工资', '加班工资'], ['总工时', '非加班工时', '加班工时']],
+                "dataname": [['总工资', '非加班工资', '加班工资'], ['总工日', '非加班工日', '加班工日']],
                 "data": [result2,  # 工资统计
                          result3,  # 工日统计
                          ],

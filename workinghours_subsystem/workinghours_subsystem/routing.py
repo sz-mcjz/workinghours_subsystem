@@ -1,7 +1,7 @@
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.urls import path
-from workinghours_subsystem.consumers import ChatConsumer
+from socketchat.consumers import ChatConsumer
 
 websocket_urlpatterns = [
     path('ws/chat/', ChatConsumer),

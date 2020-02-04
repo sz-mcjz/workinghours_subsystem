@@ -29,10 +29,14 @@ class ChatConsumer(WebsocketConsumer):
         type = text_data_json['type']
         sendto = text_data_json['sendto']
         # print("收到消息---------------", message)
-        if type == 'admin':
-            pass
-
-        onlinedic[sendto].send(text_data=json.dumps({
-            'message': message
-        }))
+        # if type == 'admin':
+        #     pass
+        try:
+            onlinedic[sendto].send(text_data=json.dumps({
+                'message': message
+            }))
+        except:
+            onlinedic['admin'].send(text_data=json.dumps({
+                'message': '该用户已下线'
+            }))
 

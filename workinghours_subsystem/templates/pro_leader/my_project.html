@@ -1,20 +1,24 @@
+<!--我的项目-->
 <div>
-    <table class="table tab-css tab-hover" style="width:20%">
-        <tr>
+    <table class="table tab-css tab-hover" style="width:360px">
+        <tr style="width: 30%">
             <th>项目名称:</th>
             <th>
-                <select name="" id="select" style="width: 100%">
+                <select name="" id="select">
 
                 </select>
             </th>
-
+            <th>
+                <a class="btn btn-primary" id="outtoexcle" style="padding: 5px;color: white">导出excle</a>
+            </th>
         </tr>
     </table>
 </div>
 <table class="table tab-css tab-hover" style="vertical-align:middle; text-align: center" id="project_list">
 
 </table>
-
+{% load static %}
+<script src="{% static 'js/jquery.table2excel.js' %}"></script>
 <script>
     $.get(orig + "/leader/mine/pro/", {}, function (request) {
         var data = request.data.mine_pro;
@@ -35,12 +39,12 @@
             let data = request.data.workers;
             let v = '<tr>\n' +
                 '<th style="text-align:center; width: 3%">员工编号</th>\n' +
-                '<th style="text-align:center; width: 4%">姓名</th>\n' +
+                '<th style="text-align:center; width: 3%">姓名</th>\n' +
                 '<th style="text-align:center; width: 5%">工种</th>\n' +
                 '<th style="text-align:center; width: 5%">在岗状态</th>\n' +
                 '<th style="text-align:center; width: 5%">工资标准</th>\n' +
                 '<th style="text-align:center; width: 5%">积累应发工资</th>\n' +
-                '<th style="text-align:center; width: 5%">积累非加班工资</th>\n' +
+                '<th style="text-align:center; width: 6%">积累非加班工资</th>\n' +
                 '<th style="text-align:center; width: 5%">积累加班工资</th>\n' +
                 '<th style="text-align:center; width: 5%">积累实发工资</th>\n' +
                 '<th style="text-align:center; width: 5%">累计工时</th>\n' +
@@ -71,5 +75,24 @@
         })
     };
     getworker1();
+    $("#outtoexcle").click(() => {
+        $("#project_list").table2excel({
+            exclude: ".noExl",
+            name: "Excel Document Name",
+            filename: "myFileName",
+            exclude_img: true,
+            exclude_links: true,
+            exclude_inputs: true
+        });
+        return false;
+    })
+    //      table2excel插件的可用配置参数有：
+    //
+    //            exclude：不被导出的表格行的CSS class类。
+    //            name：导出的Excel文档的名称。
+    //            filename：Excel文件的名称。
+    //            exclude_img：是否导出图片。
+    //            exclude_links：是否导出超链接
+    //            exclude_inputs：是否导出输入框中的内容。
 </script>
 

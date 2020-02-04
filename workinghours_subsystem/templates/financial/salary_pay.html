@@ -5,8 +5,8 @@
     }
 </style>
 <div>
-    <table class="table tab-css tab-hover" style="width: 20%">
-        <tr>
+    <table class="table tab-css tab-hover" style="width: 260px">
+        <tr >
             <th>项目名称:</th>
             <th>
                 <select name="" id="projectselect" style="width: 100%">
@@ -54,10 +54,6 @@
         $("#projectselect").html(v);
     });
 
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    });
-
     function onlyNumber(obj) {
         var t = obj.value.charAt(0);
         obj.value = obj.value.replace(/[^\d\.]/g, '');
@@ -75,7 +71,6 @@
     var getw = function getworker(pro_id, page) {
         $.get(orig + "/financial/pay/salary/", {"pro_id": pro_id, "page": page}, function (request) {
             let data = request.data.workers;
-            console.log(request.data.workers);
             let v = '<tr>\n' +
                 '        <th style="text-align:center; width: 6%">编号</th>\n' +
                 '        <th style="text-align:center; width: 6%">姓名</th>\n' +
@@ -98,46 +93,51 @@
                     '        <td>' + data[i].pro_name + '</td>\n' +
                     '        <td>' + data[i].worker_type + '</td>\n' +
                     '        <td>' + data[i].entry_data + '</td>\n' +
-                    '        <td><input type="text" class="form-control newinput " oninput="value=onlyNumber(this)" data-toggle="tooltip" required ' +
+                    '        <td><input type="text" class="form-control newinput " pro_id="'+ data[i].project_name_id +'" ' +
+                    'oninput="value=onlyNumber(this)" data-toggle="tooltip" required workerid="'+ data[i].worker_id +'"' +
                     ' data-placement="bottom" title="输入只能是数字或小数" type="text"></input></td>\n' +
-                    '        <td>备注</td>\n' +
+                    '        <td><input class="form-control newinput"></td>\n' +
                     '    </tr>';
                 $("#attendManage").append(v);
             }
+            $('[data-toggle="tooltip"]').tooltip();
         })
     };
 
     $("#workhoursubmit2").click(function () {
-        {#let tr = $(".workertr");#}
-        {#var attend_data = [];#}
-        {#var pro_id = $("#projectselect").val();#}
-        {##}
-        {#for (let i = 0; i < tr.length; i++) {#}
-        {#    let workerid = tr.eq(i).children("td").children('input').eq(0).attr("workerid");#}
-        {#    let normal = tr.eq(i).children("td").children('input').eq(0).val();#}
-        {#    let extra = tr.eq(i).children("td").children('input').eq(1).val();#}
-        {#    let note = tr.eq(i).children("td").children('input').eq(2).val();#}
-        {#    if (workerid == "" || normal == "" || extra == "") {#}
-        {#        tr.eq(i).css("border", "1px red solid");#}
-        {#        return false;#}
-        {#    }#}
-        {#    attend_data.push({"id": workerid, "normal": normal, "extra": extra, "note": note});#}
-        {#}#}
-        {#$.post(orig + "", {#}
-        {#    "attendance_data": JSON.stringify(attend_data),#}
-        {#    "pro_id": pro_id#}
-        {#}, function (result) {#}
-        {#    console.log(result);#}
-        {#    getw(result.data);#}
-        {#    if (result.msg == "录入列表为空") {#}
-        {#        toastr.error(result.msg);#}
-        {#    } else {#}
-        {#        toastr.success("提交成功！");#}
-        {#    }#}
-        {#    $("#Remind").click();#}
-        {#});#}
-        {#return false;#}
-    alert("暂时未提供");
-    return false;
+
+        let tr = $(".workertr");
+        var attend_data = [];
+        var pro_id = $("#projectselect").val();
+
+        for (let i = 0; i < tr.length; i++) {
+            let workerid = tr.eq(i).children("td").children('input').eq(0).attr("workerid");
+            let salary = tr.eq(i).children("td").children('input').eq(0).val();
+            let note = tr.eq(i).children("td").children('input').eq(1).val();
+
+            if (workerid == "" || salary == "") {
+                tr.eq(i).css("border", "1px red solid");
+                return false;
+            }
+            attend_data.push({"id": workerid, "salary": salary, "note": note});
+        }
+        $.post(orig + "/financial/pay/salary/", {
+            "attendance_data": JSON.stringify(attend_data),
+            "pro_id": pro_id
+        }, function (result) {
+            getw(result.data);
+            if (result.msg == "录入列表为空") {
+                toastr.error(result.msg);
+            }
+            else if(result.code == 0) {
+                toastr.error(result.msg);
+            }
+            else if(result.code == 1){
+                toastr.success(result.msg);
+                getw(result.data.pro_id);
+            }
+            $("#Remind").click();
+        });
+        return false;
     });
 </script>

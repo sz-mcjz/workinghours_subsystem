@@ -163,7 +163,7 @@
 <div class="modal fade" id="changeInfoSeeUserInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <form action="" method="post">
-            <div class="modal-content" style="margin-top: 300px">
+            <div class="modal-content" style="margin-top: 50px">
                 <h4 style="padding-top: 15px;padding-left: 15px">修改密码</h4>
                 <div class="modal-body">
                     <table class="table" style="margin-bottom:0px;" id="changepwd">
@@ -365,10 +365,10 @@
 
         function send_online() {
             $.get(orig+"/sendonline/",{'online_type':'see'},function (request) {
-                let msg = request.data.msg;
-                if(msg !="" && msg!=null){
-                    toastr.info(msg);
-                }
+                //let msg = request.data.msg;
+                //if(msg !="" && msg!=null){
+                 //   toastr.info(msg);
+                //}
             });
         }
         // window 失去焦点，停止输出

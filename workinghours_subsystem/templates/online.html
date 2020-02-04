@@ -58,6 +58,11 @@
     var orig = window.location.origin;
     var chatSocket = new WebSocket(
         'ws://' + window.location.host + '/ws/chat/');
+    chatSocket.onmessage = function (e) {
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+        toastr.info(message);
+    };
     var func1 = function () {
         $.post(orig + "/getonline/", {}, function (result) {
             let openlist = result.data.open_list;

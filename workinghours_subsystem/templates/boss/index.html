@@ -12,16 +12,16 @@
         <ul class="menu-dropdown">
         </ul>
     </li>
-    {#    <li>#}
-    {#        <a href="#" class="boss-nav"><i class="ion ion-edit"></i><span>员工管理</span></a>#}
-    {#        <ul class="menu-dropdown">#}
-    {#        </ul>#}
-    {#    </li>#}
-    {#    <li>#}
-    {#        <a href="#" class="boss-nav"><i class="ion ion-flag"></i><span>工资管理</span></a>#}
-    {#        <ul class="menu-dropdown">#}
-    {#        </ul>#}
-    {#    </li>#}
+        <li>
+            <a href="#" class="boss-nav"><i class="ion ion-edit"></i><span>项目信息</span></a>
+            <ul class="menu-dropdown">
+            </ul>
+        </li>
+        <li>
+            <a href="#" class="boss-nav"><i class="ion ion-flag"></i><span>修改记录</span></a>
+            <ul class="menu-dropdown">
+            </ul>
+        </li>
     <li>
         <a href="#" class="has-dropdown"><i class="ion ion-ios-albums-outline"></i>统计分析<span></span></a>
         <ul class="menu-dropdown">
@@ -43,13 +43,23 @@
                     $(".main-content").eq(0).html(request)
                 })
             } else if ($(this).parent().index() == 2) {
-                $.post(orig + "/boss/personAdmin/", {}, function (request) {
-                    $(".main-content").eq(0).html(request)
-                })
+                $.post(orig + "/financial/projectinfo/", {}, function (result) {
+                    // 项目信息
+                    $(".main-content").eq(0).html(result);
+                    $('html,body').animate({scrollTop: 0}, 300);
+                });
+                //$.post(orig + "/boss/personAdmin/", {}, function (request) {
+                 //   $(".main-content").eq(0).html(request)
+                //})
             } else if ($(this).parent().index() == 3) {
-                $.post(orig + "/boss/salaryAdmin/", {}, function (request) {
-                    $(".main-content").eq(0).html(request)
+                $.post(orig + "/financial/modifyrecode/", {}, function (result) {
+                    // 修改记录
+                    $(".main-content").eq(0).html(result);
+                    $('html,body').animate({scrollTop: 0}, 300);
                 })
+                //$.post(orig + "/boss/salaryAdmin/", {}, function (request) {
+                 //   $(".main-content").eq(0).html(request)
+                //})
             }
         });
         $(".statistic-list").click(function () {
