@@ -389,8 +389,15 @@
 </script>
 
 <script>
+    var h = null;
+    if (window.location.protocol=='http:'){
+        h = 'ws://';
+    }
+    else if(window.location.protocol=='https:'){
+        h = 'wss://';
+    }
     var chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/ws/chat/');
+        h + window.location.host + '/ws/chat/');
 
     chatSocket.onmessage = function (e) {
         var data = JSON.parse(e.data);

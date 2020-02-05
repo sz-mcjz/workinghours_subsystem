@@ -7,23 +7,23 @@
 {% endblock %}
 {% block components %}
     <li>
-        <a href="#" class="boss-nav"><i
+        <a href="javascript:;" class="boss-nav leadera"><i
                 class="ion ion-ios-book-outline"></i><span>项目管理</span></a>
         <ul class="menu-dropdown">
         </ul>
     </li>
         <li>
-            <a href="#" class="boss-nav"><i class="ion ion-edit"></i><span>项目信息</span></a>
+            <a href="javascript:;" class="boss-nav leadera"><i class="ion ion-edit"></i><span>项目信息</span></a>
             <ul class="menu-dropdown">
             </ul>
         </li>
         <li>
-            <a href="#" class="boss-nav"><i class="ion ion-flag"></i><span>修改记录</span></a>
+            <a href="javascript:;" class="boss-nav leadera" ><i class="ion ion-flag"></i><span>修改记录</span></a>
             <ul class="menu-dropdown">
             </ul>
         </li>
     <li>
-        <a href="#" class="has-dropdown"><i class="ion ion-ios-albums-outline"></i>统计分析<span></span></a>
+        <a href="javascript:;" class="has-dropdown"><i class="ion ion-ios-albums-outline"></i>统计分析<span></span></a>
         <ul class="menu-dropdown">
             <li><a class="statistic-list" href="javascript:;"><i class="ion ion-ios-circle-outline"></i>月统计</a></li>
             <li><a class="statistic-list" href="javascript:;"><i class="ion ion-ios-circle-outline"></i>单项目</a></li>
@@ -33,15 +33,12 @@
 {% endblock %}
 {% block yangJS %}
     <script>
-        $.post(orig + "/boss/createItem/", {}, function (request) {
-            $(".main-content").eq(0).html(request)
-        });
+
         $(".boss-nav").click(function () {
-            console.log($(this).parent().index())
             if ($(this).parent().index() == 1) {
                 $.post(orig + "/boss/createItem/", {}, function (request) {
-                    $(".main-content").eq(0).html(request)
-                })
+                    $(".main-content").eq(0).html(request);
+                });
             } else if ($(this).parent().index() == 2) {
                 $.post(orig + "/financial/projectinfo/", {}, function (result) {
                     // 项目信息
@@ -56,26 +53,30 @@
                     // 修改记录
                     $(".main-content").eq(0).html(result);
                     $('html,body').animate({scrollTop: 0}, 300);
-                })
+                });
                 //$.post(orig + "/boss/salaryAdmin/", {}, function (request) {
                  //   $(".main-content").eq(0).html(request)
                 //})
             }
+            $(".statistic-list").parents("li").removeClass("active");
+            $(this).parent("li").siblings("li").removeClass("active");
+            $(this).parent("li").addClass("active");
         });
         $(".statistic-list").click(function () {
+
             $(".leadera").parents("li").removeClass("active");
             if ($(this).parent().index() == 0) {
                 $.post(orig + "/financial/statisticMonth/", {}, function (request) {
-                    $(".main-content").eq(0).html(request)
-                })
+                    $(".main-content").eq(0).html(request);
+                });
             } else if ($(this).parent().index() == 1) {
                 $.post(orig + "/financial/statisticSingle/", {}, function (request) {
-                    $(".main-content").eq(0).html(request)
-                })
+                    $(".main-content").eq(0).html(request);
+                });
             } else if ($(this).parent().index() == 2) {
                 $.post(orig + "/financial/statisticTypeWork/", {}, function (request) {
-                    $(".main-content").eq(0).html(request)
-                })
+                    $(".main-content").eq(0).html(request);
+                });
             }
         })
     </script>

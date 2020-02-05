@@ -75,6 +75,7 @@
                     $('html,body').animate({scrollTop: 0}, 300);
                 });
             }
+            $(".statistic-list").parents("li").removeClass("active");
             $(this).parent("li").siblings("li").removeClass("active");
             $(this).parent("li").addClass("active");
             return false;

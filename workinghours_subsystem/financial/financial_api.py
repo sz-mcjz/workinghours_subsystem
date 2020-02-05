@@ -17,6 +17,9 @@ from workinghours_subsystem.settings import SECRET_KEY
 def financial_index(request):
     uuid = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))
     user = Staff.objects.filter(telephone=uuid).first()
+    if (not user) or (user.department_id != 1 and user.department_id != 3):
+        return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
+
     data = {
         'username': user.username,
         'icon': user.icon,

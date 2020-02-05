@@ -173,6 +173,9 @@
     .delId {
         display: none;
     }
+    .newbtn{
+        padding: 5px 15px 5px 15px;
+    }
 </style>
 <script>
     $.get(orig + "/boss/create/pro/", {}, function (result) {
@@ -198,10 +201,10 @@
                 '                <td>' + projects[i].overtime + '</td>\n' +
                 '                <td>' + projects[i].note + '</td>\n' +
                 '                <td>\n' +
-                '                    <button type="button" value="' + projects[i].project_id + '" class="btn modify btn-primary" name="change" data-toggle="modal"\n' +
+                '                    <button type="button" value="' + projects[i].project_id + '" class="btn modify btn-primary newbtn" name="change" data-toggle="modal"\n' +
                 '                            data-target="#modifyItem">修改\n' +
                 '                    </button>\n' +
-                '                    <button type="button" value="' + projects[i].project_id + '" class="btn del btn-primary deletepro" name="exit" data-toggle="modal" data-target="#delItem">删除</button>\n' +
+                '                    <button type="button" value="' + projects[i].project_id + '" class="btn del btn-primary deletepro newbtn" name="exit" data-toggle="modal" data-target="#delItem">删除</button>\n' +
                 '                </td>\n' +
                 '            </tr>'
         }

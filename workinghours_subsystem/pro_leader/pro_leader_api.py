@@ -15,7 +15,7 @@ from workinghours_subsystem.settings import SECRET_KEY
 def pro_leader_index(request):
     uuid = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))
     user = Staff.objects.get(telephone=uuid)
-    if not user:
+    if (not user) or (user.department_id != 7):
         return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
 
     uuid = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))
@@ -172,7 +172,7 @@ def pro_leader_notinput(request):
         now_time = datetime.datetime.now()
         # 取时间等于今天的 项目名字为 XXX 的 工人id，因为明天他也要可以填写
         previnfo = list([i['worker_info_id_id'] for i in WorkerHours.objects.filter(pname=Project.objects.get(
-            project_id=pro_id).project_name, write_data=now_time,salary=0).values(
+            project_id=pro_id).project_name, write_data=now_time, salary=0).values(
             "worker_info_id_id")])
 
         page = int(request.GET.get('page', 1))
@@ -243,7 +243,8 @@ def pro_leader_attend(request):
                 workerhours.save()
             except:
                 return JsonResponse({'code': 0, 'msg': '有部分考勤数据录入失败'}, json_dumps_params={'ensure_ascii': False})
-        return JsonResponse({'code': 1, 'msg': '考勤数据录入成功','data':{'pro_id':pro_id}}, json_dumps_params={'ensure_ascii': False})
+        return JsonResponse({'code': 1, 'msg': '考勤数据录入成功', 'data': {'pro_id': pro_id}},
+                            json_dumps_params={'ensure_ascii': False})
 
 
 # 考勤历史数据  显示页面为 timerecord/
@@ -361,7 +362,7 @@ def pro_leader_approve(request):
         if dic['status'] == 2:
             dic['status'] = '未通过'
         info2.append(dic)
-    info2 = sorted(info2,key=lambda x:x['status'],reverse=True)
+    info2 = sorted(info2, key=lambda x: x['status'])
     data = {
         'code': 1,
         'msg': '请求成功',
