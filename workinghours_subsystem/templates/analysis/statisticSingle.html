@@ -2,8 +2,7 @@
     <div id="btns"></div>
     <div id="content1" style="width: 100%;height: 400px;"></div>
     <div id="content2">
-        <div class="datacontent" style="width: 100%;height: 400px;"></div>
-        <div class="datacontent" style="width: 100%;height: 400px;"></div>
+
     </div>
 </div>
 <style>
@@ -20,8 +19,8 @@
         let pros = request.data.mine_pro;
         $.get(orig + "/financial/statisticSingle/", {"pro_id": pros[0].project_id}, function (result) {
             let data = result.data;
-            echars1(data);
-            echars2(data);
+            echars1(data);  // 第一个图
+            echars2(data);  // 后三个小图
 
         });
 
@@ -101,7 +100,11 @@
     }
 
     function echars2(data) {
-        for (var i = 0; i < 2; i++) {
+        $("#content2").html("");
+        for(let i=0;i<data.dataname.length;i++){
+            $("#content2").append('<div class="datacontent" style="width: 100%;height: 400px;"></div>')
+        }
+        for (var i = 0; i < data.dataname.length; i++) {
             var app = {};
             var option = null;
             var dom = document.getElementsByClassName("datacontent");

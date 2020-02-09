@@ -4,14 +4,14 @@
 
 <script type="text/javascript">
     $.get(orig + "/financial/statisticTypeWork/", {}, function (result) {
-        let worker_type = result.data.worker_type;
         let data = result.data.data;
         let pro_name = result.data.project_name;
+
         for (let i = 0; i < pro_name.length; i++) {
-            $("#data-cont1").append('<div class="datacontaint1" style="width: 380px;height:400px;float: left;"></div>')
+            $("#data-cont1").append('<div class="datacontent1" style="width: 380px;height:400px;float: left;"></div>')
         }
         for (var i = 0; i < pro_name.length; i++) {
-            var dom = document.getElementsByClassName("datacontaint1");
+            var dom = document.getElementsByClassName("datacontent1");
             var myChart = echarts.init(dom[i]);
             option = null;
             option = {
@@ -34,7 +34,7 @@
                 xAxis: [
                     {
                         type: 'category',
-                        data: worker_type,
+                        data: data[i][0],
                         axisTick: {
                             alignWithLabel: true
                         }
@@ -50,7 +50,7 @@
                         name: '',
                         type: 'bar',
                         barWidth: '80%',
-                        data: [data[0][i], data[1][i], data[2][i], data[3][i], data[4][i], data[5][i]],
+                        data:  data[i][1],
                         itemStyle: {
                             normal: {
                                 label: {

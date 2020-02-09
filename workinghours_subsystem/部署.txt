@@ -1,0 +1,26 @@
+# 依赖包为：requirements.txt
+# 项目目录一定要为：/var/www/workinghours_subsystem/manage.py
+# 使用nginx+uwsgi+daphne+supervisor（用来自动启动daphne）部署
+
+
+# 关闭supervisord
+supervisorctl shutdown
+# 无法启动 -- 清除配置
+# unlink /tmp/supervisor.sock
+# unlink /var/run/supervisor.sock
+# 开启supervisord
+supervisord -c /var/www/supervisord.conf
+# 使用supervisord启动daphne
+# supervisorctl start daphne
+# 停止daphne
+# supervisorctl stop daphne
+# 停止uwsgi
+uwsgi --stop uwsgi.pid
+# 启动uwsgi
+uwsgi --ini uwsgi.ini
+# 关闭nginx
+nginx -s stop
+# 开启nginx
+nginx -c /var/www/nginx.conf
+# 重启nginx
+# nginx -s reload 

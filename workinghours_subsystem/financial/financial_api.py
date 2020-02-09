@@ -156,7 +156,8 @@ def financial_data_paysalary(request):
             except:
                 return JsonResponse({'code': 0, 'msg': '有部分数据录入失败'}, json_dumps_params={'ensure_ascii': False})
 
-        return JsonResponse(data={"code": 1, "msg": "工资发放录入成功",'data':{'pro_id':pro_id}}, json_dumps_params={'ensure_ascii': False})
+        return JsonResponse(data={"code": 1, "msg": "工资发放录入成功", 'data': {'pro_id': pro_id}},
+                            json_dumps_params={'ensure_ascii': False})
 
 
 # 工时审批
@@ -174,7 +175,7 @@ def financial_data_hoursapproval(request):
             dic = v.__dict__
             dic.pop('_state')
             modifier1.append(dic)
-        modifier1 = sorted(modifier1,key=lambda x:x['status'])
+        modifier1 = sorted(modifier1, key=lambda x: x['status'])
         data = {
             'code': 1,
             'msg': '请求成功',
@@ -363,9 +364,55 @@ def statisticSingle(request):
 
         result2 = domonth(result2)
 
-        # 人数统计  未写出
-
-        # 查询工日统计  按项目查询 录入日期分组 统计查询总工日 非加班工日和加班工日
+        # ************人数统计
+        # -- 请假的sql 发工资和工时都为0，上班的是有工时的
+        # sql = """
+        # SELECT write_data daynum,count(worker_info_id_id)
+        # FROM mcjz_worker_hours a LEFT JOIN mcjz_worker_info b on a.worker_info_id_id=b.worker_id and status=1
+        # where pname='蛇口项目一' and work_day=0 and overtime=0 and salary=0 and DATE_FORMAT(write_data, '%Y%m')=DATE_FORMAT( CURDATE(),'%Y%m') GROUP BY write_data
+        # """
+        # 正常上班工日sql
+        # sql = """
+        # SELECT write_data daynum,count(worker_info_id_id)
+        # FROM mcjz_worker_hours a LEFT JOIN mcjz_worker_info b on a.worker_info_id_id=b.worker_id and status=1
+        # where pname='蛇口项目一' and work_day!=0 and overtime!=0 and salary=0 and DATE_FORMAT(write_data, '%Y%m')=DATE_FORMAT( CURDATE(),'%Y%m') GROUP BY write_data
+        # """
+        # 两个结合起来sql
+        sql = """
+        (select tmp2.daynum,
+        ifnull(gzrs,0)+ifnull(qjrs,0),
+        ifnull(gzrs,0),
+        ifnull(qjrs,0)
+        from
+        (SELECT write_data daynum,pname,count(worker_info_id_id) qjrs
+        FROM mcjz_worker_hours a LEFT JOIN mcjz_worker_info b on a.worker_info_id_id=b.worker_id and status=1 
+        where pname='""" + pro.project_name + """' and work_day=0 and overtime=0 and salary=0 and DATE_FORMAT(write_data, '%Y%m')=DATE_FORMAT( CURDATE(),'%Y%m') GROUP BY write_data) tmp1
+        right join
+        (SELECT write_data daynum,pname,count(worker_info_id_id) gzrs
+        FROM mcjz_worker_hours a LEFT JOIN mcjz_worker_info b on a.worker_info_id_id=b.worker_id and status=1  
+        where pname='""" + pro.project_name + """' and work_day!=0 and overtime!=0 and salary=0 and DATE_FORMAT(write_data, '%Y%m')=DATE_FORMAT( CURDATE(),'%Y%m') GROUP BY write_data) tmp2
+        on tmp1.daynum = tmp2.daynum)
+        union
+        (select tmp2.daynum,
+        ifnull(gzrs,0)+ifnull(qjrs,0),
+        ifnull(gzrs,0),
+        ifnull(qjrs,0)
+        from
+        (SELECT write_data daynum,pname,count(worker_info_id_id) qjrs
+        FROM mcjz_worker_hours a LEFT JOIN mcjz_worker_info b on a.worker_info_id_id=b.worker_id and status=1 
+        where pname='""" + pro.project_name + """' and work_day=0 and overtime=0 and salary=0 and DATE_FORMAT(write_data, '%Y%m')=DATE_FORMAT( CURDATE(),'%Y%m') GROUP BY write_data) tmp1
+        left join
+        (SELECT write_data daynum,pname,count(worker_info_id_id) gzrs
+        FROM mcjz_worker_hours a LEFT JOIN mcjz_worker_info b on a.worker_info_id_id=b.worker_id and status=1  
+        where pname='""" + pro.project_name + """' and work_day!=0 and overtime!=0 and salary=0 and DATE_FORMAT(write_data, '%Y%m')=DATE_FORMAT( CURDATE(),'%Y%m') GROUP BY write_data) tmp2
+        on tmp1.daynum = tmp2.daynum)
+        """
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        result4 = [list(i) for i in result]
+        result4 = domonth(result4)  # 同样加到domonth中过滤
+        print(result4)
+        # ***************查询工日统计  按项目查询 录入日期分组 统计查询总工日 非加班工日和加班工日
         sql = """
             SELECT write_data daynum,sum(work_day)+sum(overtime),sum(work_day),sum(overtime)
             FROM mcjz_worker_hours where pname='""" + pro.project_name + """' and DATE_FORMAT(write_data, '%Y%m')=DATE_FORMAT( CURDATE(),'%Y%m') GROUP BY write_data
@@ -383,10 +430,11 @@ def statisticSingle(request):
                 "pro_name": result1[0].pop(),
                 "name1": ['项目总人数', '项目总工日', '项目非加班工日', '项目加班工日', '项目总工资', '项目总非加班工资', '项目总加班工资', '项目总已发工资'],
                 "data0": result1[0],
-                "name2": ["工资统计图", "工日统计图"],
-                "dataname": [['总工资', '非加班工资', '加班工资'], ['总工日', '非加班工日', '加班工日']],
+                "name2": ["工资统计图", "工日统计图", "工人统计图"],
+                "dataname": [['总工资', '非加班工资', '加班工资'], ['总工日', '非加班工日', '加班工日'], ['总人数', '工作人数', '请假人数']],
                 "data": [result2,  # 工资统计
                          result3,  # 工日统计
+                         result4,  # 工人统计
                          ],
             },
         }
@@ -397,30 +445,35 @@ def statisticSingle(request):
 
 def statisticTypeWork(request):
     if request.method == "GET":
-        wt = list(WorkerType.objects.all().values())
+        wt = list(Project.objects.all().values())
         # 查询单个任务的工种记录 select type_name,count(work_type_id) from mcjz_worker_type a left join mcjz_worker_info b on b.work_type_id=a.worker_type_id and b.project_name_id=1 group by type_name
         # sql = "select type_name,count(work_type_id) from mcjz_worker_type a left join mcjz_worker_info b on b.work_type_id=a.worker_type_id and b.project_name_id=1 group by type_name"
         # 查询所有任务工种记录总和  select type_name,count(work_type_id) from mcjz_worker_type a left join mcjz_worker_info b on b.work_type_id=a.worker_type_id group by type_name
         # 按工种查询  select project_name,count(work_type_id) from mcjz_project a left join mcjz_worker_info b on a.project_id=b.project_name_id and work_type_id=1 group by project_id
         cursor = connection.cursor()
-        gongzhong = []
         data = []
         project_name = []
         for w in wt:
-            gongzhong.append(w["type_name"])
-            sql = "select project_name,count(work_type_id) from mcjz_project a left join mcjz_worker_info b on a.project_id=b.project_name_id and work_type_id=" + str(
-                w["worker_type_id"]) + " where b.status=1 group by project_id"
+            project_name.append(w['project_name'])
+            sql = "select type_name,count(work_type_id) from mcjz_worker_type a left join mcjz_worker_info b on b.work_type_id=a.worker_type_id and b.status=1 and b.project_name_id=" + str(
+                w['project_id']) + " group by type_name"
             cursor.execute(sql)
             result = cursor.fetchall()
-            project_name = [list(i)[0] for i in result]
-            result = [list(i)[1] for i in result]
-            result.append(sum(result))
-            data.append(result)
+            result = [list(i) for i in result]
+            data.append([[i[0] for i in result], [i[1] for i in result]])
+
+        # 总人数追加
+        sql = "select type_name,count(work_type_id) from mcjz_worker_type a left join mcjz_worker_info b on b.work_type_id=a.worker_type_id and b.status=1 group by type_name"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        result = [list(i) for i in result]
+        data.append([[i[0] for i in result], [i[1] for i in result]])
+        project_name.append('所有项目总工种数')
         project_name.append("所有项目工种综合统计")
         # print(result)
         cursor.close()
         return JsonResponse(data={"code": 1, "msg": "查询成功",
-                                  "data": {"worker_type": gongzhong, "project_name": project_name, "data": data}},
+                                  "data": {"project_name": project_name, "data": data}},
                             json_dumps_params={'ensure_ascii': False})
     elif request.method == "POST":
         return render_to_response('analysis/statisticTypeWork.html')
