@@ -42,14 +42,13 @@
             let v = '<tr>\n' +
                 '<th style="text-align:center; width: 2%">编号</th>\n' +
                 '<th style="text-align:center; width: 3%">姓名</th>\n' +
-                '<th style="text-align:center; width: 5%">修改日期</th>\n' +
-                '<th style="text-align:center; width: 5%">上次修改日期</th>\n' +
+                '<th style="text-align:center; width: 8%">上次修改日期</th>\n' +
                 '<th style="text-align:center; width: 5%">修改人</th>\n' +
                 '<th style="text-align:center; width: 5%">修改字段</th>\n' +
                 '<th style="text-align:center; width: 5%">初始值</th>\n' +
                 '<th style="text-align:center; width: 5%">修改值</th>\n' +
-                '<th style="text-align:center; width: 8%">备注</th>\n' +
-                '<th style="text-align:center; width: 8%">处理人</th>\n' +
+                '<th style="text-align:center; width: 9%">备注</th>\n' +
+                '<th style="text-align:center; width: 5%">处理人</th>\n' +
                 '<th style="text-align:center; width: 8%">操作</th>\n' +
                 '</tr>';
             $("#modifiylist").html(v);
@@ -60,7 +59,6 @@
                 v = '<tr>\n' +
                     '<td>' + data[i].record_id + '</td>\n' +
                     '<td>' + data[i].worker_name + '</td>\n' +
-                    '<td>' + data[i].change_date + '</td>\n' +
                     '<td>' + data[i].data_date + '</td>\n' +
                     '<td>' + data[i].manager + '</td>\n' +
                     '<td>' + data[i].column + '</td>\n' +

@@ -16,9 +16,62 @@
 <table class="table tab-css tab-hover" style="vertical-align:middle; text-align: center" id="project_list">
 
 </table>
+<div class="modal fade" id="changeDaySalary" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="margin-top: 50px">
+            <h4 style="padding-top: 15px;padding-left: 15px">日新修改</h4>
+            <div class="modal-body">
+                <table class="table" style="margin-bottom:0px;" id="changepwd">
+                    <tbody>
+                    <tr>
+                        <td wdith="20%">工人名:</td>
+                        <td width="80%">
+                            <input type="text" class="form-control" id="workername"
+                                   maxlength="18" readonly="readonly"
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="20%">日薪:</td>
+                        <td width="80%">
+                            <input type="text" class="form-control" oninput="value=onlyNumber(this)"
+                                   maxlength="18" id="daysalary"
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td wdith="20%">备注:</td>
+                        <td width="80%">
+                            <input type="text" class="form-control"
+                                   maxlength="18" id="note"
+                                   autocomplete="off"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default cancel" data-target="#changeDaySalary"
+                        data-toggle="modal">取消
+                </button>
+                <button class="btn btn-primary" id="changeDaySalaryBtn">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% load static %}
 <script src="{% static 'js/jquery.table2excel.js' %}"></script>
 <script>
+    function onlyNumber(obj) {
+        var t = obj.value.charAt(0);
+        obj.value = obj.value.replace(/[^\d\.]/g, '');
+        obj.value = obj.value.replace(/^\./g, '');
+        obj.value = obj.value.replace(/\.{2,}/g, '.');
+        obj.value = obj.value.replace('.', '$#$').replace(/\./g, '').replace('$#$', '.');
+
+        return obj.value
+    }
+
     $.get(orig + "/financial/data/projectinfo/", {}, function (request) {
         var data = request.data.mine_pro;
 
@@ -42,11 +95,11 @@
                 '<th style="text-align:center; width: 4%">姓名</th>\n' +
                 '<th style="text-align:center; width: 5%">工种</th>\n' +
                 '<th style="text-align:center; width: 5%">在岗状态</th>\n' +
-                '<th style="text-align:center; width: 5%">工资标准</th>\n' +
-                '<th style="text-align:center; width: 5%">积累应发工资</th>\n' +
+                '<th style="text-align:center; width: 8%">工资标准</th>\n' +
+                '<th style="text-align:center; width: 4%">积累应发工资</th>\n' +
                 '<th style="text-align:center; width: 5%">积累非加班工资</th>\n' +
-                '<th style="text-align:center; width: 5%">积累加班工资</th>\n' +
-                '<th style="text-align:center; width: 5%">积累实发工资</th>\n' +
+                '<th style="text-align:center; width: 4%">积累加班工资</th>\n' +
+                '<th style="text-align:center; width: 4%">积累实发工资</th>\n' +
                 '<th style="text-align:center; width: 5%">累计工时</th>\n' +
                 '<th style="text-align:center; width: 5%">非加班工时</th>\n' +
                 '<th style="text-align:center; width: 5%">加班工时</th>\n' +
@@ -61,7 +114,8 @@
                     '<td>' + data[i].worker + '</td>\n' +
                     '<td>' + data[i].work_type + '</td>\n' +
                     '<td>' + data[i].status + '</td>\n' +
-                    '<td>' + data[i].das_salary + '</td>\n' +
+                    '<td><span>' + data[i].das_salary + '</span>/天&nbsp<a workerid="' + data[i].worker_id +
+                    '" class="changesalary" href="javascript:;" data-target="#changeDaySalary" data-toggle="modal" >修改</a></td>\n' +
                     '<td>' + data[i].all_salary + '</td>\n' +
                     '<td>' + data[i].day_salary + '</td>\n' +
                     '<td>' + data[i].over_salary + '</td>\n' +
@@ -72,14 +126,38 @@
                     '</tr>';
                 $("#project_list").append(v);
             }
+            $(".changesalary").click(function () {
+                $("#workername").val($(this).parent().siblings().eq(1).html());
+                $("#daysalary").val($(this).prev().html());
+                $("#daysalary").attr("worker_id", $(this).attr("workerid"))
+            })
         })
     };
     getworker1();
-        $("#outtoexcle").click(() => {
+    //修改日薪提交按钮
+    $("#changeDaySalaryBtn").click(function () {
+        $.post(orig + "/financial/modify/salary/", {
+            worker_id: $("#daysalary").attr("worker_id"),
+            day_salary: $("#daysalary").val(),
+            note:$("#note").val()
+        }, function (result) {
+            if(result.code==1){
+                toastr.success(result.msg);
+                let pro_id = $("#select option:selected").attr("value");
+                getworker1(pro_id);
+                $(".cancel").click();
+            }
+            else{
+                toastr.error(result.msg)
+            }
+        });
+        return false;
+    })
+    $("#outtoexcle").click(() => {
         $("#project_list").table2excel({
             exclude: ".noExl",
             name: "Excel Document Name",
-            filename: "myFileName",
+            filename: $("#select option:selected").html(),
             exclude_img: true,
             exclude_links: true,
             exclude_inputs: true

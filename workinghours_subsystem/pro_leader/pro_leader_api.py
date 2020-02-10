@@ -8,14 +8,14 @@ from django.shortcuts import render_to_response
 
 from db.models import Staff, Project, WorkerInfo, WorkerType, WorkerHours, WorkerHoursChange, ApproveRecode
 from db.tools import UseAes
-from workinghours_subsystem.settings import SECRET_KEY
+from workinghours_subsystem.settings import SECRET_KEY,LEADER
 
 
 # Leader 首页
 def pro_leader_index(request):
     uuid = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))
     user = Staff.objects.get(telephone=uuid)
-    if (not user) or (user.department_id != 7):
+    if (not user) or (user.department_id not in LEADER):
         return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
 
     uuid = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))

@@ -147,7 +147,12 @@
             </aside>
         </div>
         <div class="main-content">
-            {% block main_content %}{% endblock %}
+            {% block main_content %}
+                <div style="text-align: center">
+                    <h2>欢迎使用</h2>
+                    <p>本系统有三个页面，分别是总经办页面、财务页面、工地管理员页面。</p>
+                </div>
+            {% endblock %}
         </div>
         <footer class="main-footer">
             <div class="footer-left">
@@ -328,9 +333,9 @@
                 if (result.department_id == '1') {
                     window.location.replace(orig + "/boss/index/");
                 } else if (result.department_id == '3') {
-                    window.location.replace(orig + "/leader/index/");
-                } else if (result.department_id == '7') {
                     window.location.replace(orig + "/financial/index/");
+                } else if (result.department_id == '7') {
+                    window.location.replace(orig + "/leader/index/");
                 }
 
             } else if (result.msg == "新密码不能小于4位。") {
@@ -351,49 +356,49 @@
 </script>
 <script>
 
-        //正在使用 发送请求
-        var online = setInterval(function () {
-            $.get(orig+"/sendonline/",{'online_type':'open'},function (request) {
-                //let msg = request.data.msg;
-                //if(msg !="" && msg!=null){
-                //    toastr.info(msg);
-                //}
-            });
-        }, 6000);
-        //正在浏览 发送请求
-        var interval_output = null;
+    //正在使用 发送请求
+    var online = setInterval(function () {
+        $.get(orig + "/sendonline/", {'online_type': 'open'}, function (request) {
+            //let msg = request.data.msg;
+            //if(msg !="" && msg!=null){
+            //    toastr.info(msg);
+            //}
+        });
+    }, 6000);
+    //正在浏览 发送请求
+    var interval_output = null;
 
-        function send_online() {
-            $.get(orig+"/sendonline/",{'online_type':'see'},function (request) {
-                //let msg = request.data.msg;
-                //if(msg !="" && msg!=null){
-                 //   toastr.info(msg);
-                //}
-            });
-        }
-        // window 失去焦点，停止输出
-        $(window).blur(function () {
-            clearInterval(interval_output);
+    function send_online() {
+        $.get(orig + "/sendonline/", {'online_type': 'see'}, function (request) {
+            //let msg = request.data.msg;
+            //if(msg !="" && msg!=null){
+            //   toastr.info(msg);
+            //}
         });
-        // window 每次获得焦点
-        $(window).focus(function () {
-            interval_output = setInterval(function () {
-                send_online();
-            }, 3000);
-        });
+    }
+
+    // window 失去焦点，停止输出
+    $(window).blur(function () {
+        clearInterval(interval_output);
+    });
+    // window 每次获得焦点
+    $(window).focus(function () {
         interval_output = setInterval(function () {
             send_online();
         }, 3000);
+    });
+    interval_output = setInterval(function () {
+        send_online();
+    }, 3000);
 
 
 </script>
 
 <script>
     var h = null;
-    if (window.location.protocol=='http:'){
+    if (window.location.protocol == 'http:') {
         h = 'ws://';
-    }
-    else if(window.location.protocol=='https:'){
+    } else if (window.location.protocol == 'https:') {
         h = 'wss://';
     }
     var chatSocket = new WebSocket(
@@ -408,29 +413,29 @@
     chatSocket.onclose = function (e) {
         console.error('Chat socket closed unexpectedly');
     };
-/*
-    document.querySelector('#search-submit').focus();
-    document.querySelector('#search-submit').onkeyup = function (e) {
-        if (e.keyCode === 13) {  // enter, return
-            document.querySelector('#search-submit').click();
-        }
-        return false;
-    };
+    /*
+        document.querySelector('#search-submit').focus();
+        document.querySelector('#search-submit').onkeyup = function (e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#search-submit').click();
+            }
+            return false;
+        };
 
-    document.querySelector('#search-submit').onclick = function (e) {
-        var messageInputDom = document.querySelector('#search-input');
-        var message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({
-            'type': 'admin',
-            'sendto': '18159270667',
-            'message': message
-        }));
+        document.querySelector('#search-submit').onclick = function (e) {
+            var messageInputDom = document.querySelector('#search-input');
+            var message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'type': 'admin',
+                'sendto': '18159270667',
+                'message': message
+            }));
 
-        messageInputDom.value = '';
-        return false;
-    };
+            messageInputDom.value = '';
+            return false;
+        };
 
- */
+     */
 </script>
 {% block shiJS %}
 {% endblock %}

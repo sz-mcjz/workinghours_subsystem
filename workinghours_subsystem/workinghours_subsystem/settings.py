@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'lib.middleware.MiddlewareCheckUser'
 ]
 
 ROOT_URLCONF = 'workinghours_subsystem.urls'
@@ -134,3 +135,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_HEADERS = ['*']
 
 REMOTE_ADDRESS = '120.77.83.157'
+
+# 可以登录 leader 的白名单 部门id
+LEADER = [1,2,4,5,6,7]

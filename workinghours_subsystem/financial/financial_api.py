@@ -160,6 +160,40 @@ def financial_data_paysalary(request):
                             json_dumps_params={'ensure_ascii': False})
 
 
+def financial_modify_salary(request):
+    uuid = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))
+    user = Staff.objects.get(telephone=uuid)
+    if (not user) or (user.department_id != 1 and user.department_id != 3):
+        return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
+    if request.method == "GET":
+        return JsonResponse(data={"code": 0, "msg": "违规操作"}, json_dumps_params={'ensure_ascii': False})
+    elif request.method == "POST":
+        worker_id = request.POST.get("worker_id")
+        day_salary = request.POST.get("day_salary")
+        note = request.POST.get("note")
+        # print("---------------",worker_id,day_salary,note)
+        try:
+            wk = WorkerInfo.objects.get(worker_id=worker_id)
+            ar = WorkerHoursChange()
+            ar.change_data = datetime.datetime.now()
+            ar.column = "日薪标准"
+            ar.data_date = datetime.datetime.now()
+            ar.manager = user.username
+            ar.original_data = wk.das_salary
+            ar.change_data = day_salary
+            ar.note = note
+            ar.status = 1  # 已经是审批好的状态
+            ar.approver = user.username
+            ar.approver_note = note
+            ar.worker_info_id_id = worker_id
+            ar.save()
+            wk.das_salary = float(day_salary)
+            wk.save()
+        except:
+            return JsonResponse(data={"code": 0, "msg": "修改出错"}, json_dumps_params={'ensure_ascii': False})
+        return JsonResponse(data={"code": 1, "msg": "修改成功"}, json_dumps_params={'ensure_ascii': False})
+
+
 # 工时审批
 def financial_data_hoursapproval(request):
     uuid = UseAes(SECRET_KEY).decodebytes(request.COOKIES.get('uuid'))
@@ -284,7 +318,11 @@ def statisticMonth(request):
         cursor.execute(sql)
         result = cursor.fetchall()
         result = [list(i) for i in result]
-
+        prolis = [i['project_name'] for i in list(Project.objects.all().values("project_name"))]
+        reslis = [i[0] for i in result]
+        for pro in prolis:
+            if pro not in reslis:
+                result.append([pro,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
         cursor.close()
         return JsonResponse(data={"code": 1, "msg": "查询成功", "data": result}, json_dumps_params={'ensure_ascii': False})
 
@@ -353,6 +391,8 @@ def statisticSingle(request):
         cursor.execute(sql)
         result = cursor.fetchall()
         result1 = [list(i) for i in result]
+        if not result1:
+            result1 = [[0,0,0,0,0,0,0,pro.project_name]]
         # 查询工资统计  按项目查询 按工时录入日期分组 统计总工日，加班工日和非加班工日,未填写日期不会显示
         sql = """
         SELECT write_data daynum,sum(day_salary)+sum(over_salary) zgz,sum(day_salary),sum(over_salary)
@@ -390,7 +430,7 @@ def statisticSingle(request):
         right join
         (SELECT write_data daynum,pname,count(worker_info_id_id) gzrs
         FROM mcjz_worker_hours a LEFT JOIN mcjz_worker_info b on a.worker_info_id_id=b.worker_id and status=1  
-        where pname='""" + pro.project_name + """' and work_day!=0 and overtime!=0 and salary=0 and DATE_FORMAT(write_data, '%Y%m')=DATE_FORMAT( CURDATE(),'%Y%m') GROUP BY write_data) tmp2
+        where pname='""" + pro.project_name + """' and work_day!=0  and salary=0 and DATE_FORMAT(write_data, '%Y%m')=DATE_FORMAT( CURDATE(),'%Y%m') GROUP BY write_data) tmp2
         on tmp1.daynum = tmp2.daynum)
         union
         (select tmp2.daynum,
@@ -404,14 +444,14 @@ def statisticSingle(request):
         left join
         (SELECT write_data daynum,pname,count(worker_info_id_id) gzrs
         FROM mcjz_worker_hours a LEFT JOIN mcjz_worker_info b on a.worker_info_id_id=b.worker_id and status=1  
-        where pname='""" + pro.project_name + """' and work_day!=0 and overtime!=0 and salary=0 and DATE_FORMAT(write_data, '%Y%m')=DATE_FORMAT( CURDATE(),'%Y%m') GROUP BY write_data) tmp2
+        where pname='""" + pro.project_name + """' and work_day!=0  and salary=0 and DATE_FORMAT(write_data, '%Y%m')=DATE_FORMAT( CURDATE(),'%Y%m') GROUP BY write_data) tmp2
         on tmp1.daynum = tmp2.daynum)
         """
         cursor.execute(sql)
         result = cursor.fetchall()
         result4 = [list(i) for i in result]
         result4 = domonth(result4)  # 同样加到domonth中过滤
-        print(result4)
+
         # ***************查询工日统计  按项目查询 录入日期分组 统计查询总工日 非加班工日和加班工日
         sql = """
             SELECT write_data daynum,sum(work_day)+sum(overtime),sum(work_day),sum(overtime)
@@ -422,15 +462,15 @@ def statisticSingle(request):
         result3 = [list(i) for i in result]
 
         result3 = domonth(result3)
-
+        pro_name = result1[0].pop()
         data = {
             "code": 1,
             "msg": "查询成功",
             "data": {
-                "pro_name": result1[0].pop(),
+                "pro_name": pro_name,
                 "name1": ['项目总人数', '项目总工日', '项目非加班工日', '项目加班工日', '项目总工资', '项目总非加班工资', '项目总加班工资', '项目总已发工资'],
                 "data0": result1[0],
-                "name2": ["工资统计图", "工日统计图", "工人统计图"],
+                "name2": ["工资统计图("+pro_name+")", "工日统计图("+pro_name+")", "工人统计图("+pro_name+")"],
                 "dataname": [['总工资', '非加班工资', '加班工资'], ['总工日', '非加班工日', '加班工日'], ['总人数', '工作人数', '请假人数']],
                 "data": [result2,  # 工资统计
                          result3,  # 工日统计

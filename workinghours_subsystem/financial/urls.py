@@ -19,6 +19,8 @@ urlpatterns = [
     path('data/projectinfo/', financial_api.financial_data_projectinfo, name='financial_data_projectinfo'),
     # 工资发放数据接口
     path('pay/salary/', financial_api.financial_data_paysalary, name='financial_data_paysalary'),
+    # 工资修改接口
+    path('modify/salary/', financial_api.financial_modify_salary, name='financial_modify_salary'),
     # 工时审批
     path('hoursapproval/', financial_api.financial_data_hoursapproval, name='financial_data_hoursapproval'),
     # 工时修改记录查询

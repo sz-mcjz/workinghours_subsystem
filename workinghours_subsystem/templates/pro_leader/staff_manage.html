@@ -318,7 +318,7 @@
 
             });
             // 确定修改按钮
-            $("#changeWorkerSubmit").click(function () {
+            $("#changeWorkerSubmit")[0].onclick = function () {
                 let v = $("#cworkertype").val();
                 if (v == "" || v == null){
                     $("#cworkertype").css("border","solid 1px red");
@@ -339,7 +339,7 @@
                     getw($(".changeworker").eq(0).attr("pro_id"),$(".changeworker").eq(0).attr("nowpage"));
                     $("#changeStaffModalbtn").click();
                 })
-            });
+            };
 
             // 分页按钮区
             let vc = '<li><a href="#" aria-label="Previous"> <span aria-hidden="true">&laquo;</span></a></li>';
