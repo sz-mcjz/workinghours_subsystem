@@ -8,7 +8,7 @@ cffi==1.13.2
 channels==2.1.7
 channels-redis==2.3.3
 constantly==15.1.0
-cryptography==2.8
+cryptography==3.2
 daphne==2.4.1
 Django==2.2.3
 django-cors-headers==3.2.1
